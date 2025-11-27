@@ -15,7 +15,7 @@ import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 fun MainScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: LoginRegistrationViewModel = viewModel()
+//    viewModel: LoginRegistrationViewModel = viewModel()
 ) {
     Column() {
         Text(text = "Hello")
@@ -23,10 +23,12 @@ fun MainScreen(
 }
 
 
+
+
 @Preview (showBackground = true)
 @Composable
 fun MainScreenPreview(){
-    IndividualProject3Theme {
+    IndividualProject3Theme(){
         MainScreen(navController = rememberNavController())
     }
 }
