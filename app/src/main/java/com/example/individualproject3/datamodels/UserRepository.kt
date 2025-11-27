@@ -21,6 +21,18 @@ class UserRepository(
         )
     }
 
+
+    suspend fun registerUser(user: UserModel) {
+        userDao.insert(user)
+
+        //log the registration
+        logManager.logUserRegistration(
+            username = user.username,
+            userType = user.userType.name
+        )
+    }
+
+
     suspend fun getUserByUsername(username: String): UserModel? {
         val user = userDao.getUserByUsername(username)
 

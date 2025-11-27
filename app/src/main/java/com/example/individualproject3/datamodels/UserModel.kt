@@ -10,7 +10,7 @@ data class UserModel(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
 
-    var name: String = "",
+    var firstName: String = "",
     var lastName: String = "",
     var email: String = "",
     var password: String = "",
