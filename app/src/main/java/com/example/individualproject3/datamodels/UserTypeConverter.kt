@@ -1,4 +1,6 @@
+package com.example.individualproject3.datamodels
 import androidx.room.TypeConverter
+import com.example.individualproject3.UserType
 
 class UserTypeConverter {
     @TypeConverter

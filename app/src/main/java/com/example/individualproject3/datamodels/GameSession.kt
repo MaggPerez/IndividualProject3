@@ -1,6 +1,9 @@
+package com.example.individualproject3.datamodels
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.example.individualproject3.UserModel
 
 @Entity(
     tableName = "game_sessions",

@@ -1,6 +1,8 @@
+package com.example.individualproject3
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.example.individualproject3.datamodels.UserTypeConverter
 
 @Entity(tableName = "users")
 @TypeConverters(UserTypeConverter::class) // Add this for the enum

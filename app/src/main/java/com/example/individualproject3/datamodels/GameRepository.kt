@@ -1,6 +1,7 @@
 package com.example.individualproject3.datamodels
 
-import GameSession
+import com.example.individualproject3.datamodels.GameSession
+import com.example.individualproject3.datamodels.GameSessionDao
 
 class GameRepository(private val gameSessionDao: GameSessionDao) {
 

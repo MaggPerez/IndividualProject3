@@ -1,6 +1,6 @@
 package com.example.individualproject3.datamodels
 
-import GameSession
+import com.example.individualproject3.datamodels.GameSession
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query

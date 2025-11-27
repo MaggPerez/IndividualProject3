@@ -1,3 +1,5 @@
+package com.example.individualproject3.datamodels
+import com.example.individualproject3.UserModel
 import com.example.individualproject3.datamodels.UserModelDao
 
 class UserRepository(private val userDao: UserModelDao) {
