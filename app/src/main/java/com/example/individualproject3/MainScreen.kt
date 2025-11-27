@@ -34,14 +34,12 @@ fun MainScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier.background(Color.Red)
-        ) {
             Image(
                 painter = painterResource(id = R.drawable.robot),
-                contentDescription = "Logo"
+                contentDescription = "Logo",
+                modifier = Modifier.size(200.dp) // Control the image size
             )
-        }
+
 
         Text(
             text = "PuzzleBot",
