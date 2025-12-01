@@ -30,6 +30,8 @@ class LoginRegistrationViewModel(
     //login
     var username by mutableStateOf("")
     var password by mutableStateOf("")
+    var passwordVisible by mutableStateOf(false)
+        private set
 
     //registration
     var createFirstName by mutableStateOf("")
@@ -56,7 +58,14 @@ class LoginRegistrationViewModel(
 
     fun onHandleLogin(){
         //logic for login
+        viewModelScope.launch {
+            _uiEvent.emit(UiEvent.ShowToast("Login functionality coming soon!"))
+            _uiEvent.emit(UiEvent.NavigateToMain)
+        }
+    }
 
+    fun togglePasswordVisibility() {
+        passwordVisible = !passwordVisible
     }
 
 
