@@ -33,10 +33,13 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -44,7 +47,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
@@ -55,6 +57,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.individualproject3.datamodels.GameRepository
 import com.example.individualproject3.datamodels.UserDatabase
 import com.example.individualproject3.datamodels.UserRepository
+import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFactory
 import com.example.individualproject3.viewmodels.UiEvent
@@ -94,9 +97,9 @@ fun LoginScreen(
         }
     }
 
-    Surface(
-        modifier = modifier.fillMaxSize()
-    ) {
+    PuzzleBotAnimatedBackground(modifier = modifier) {
+        FloatingStars()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,41 +111,46 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             //robot Mascot Header
-            Image(
-                painter = painterResource(R.drawable.robot),
-                contentDescription = "PuzzleBot Mascot",
-                modifier = Modifier.size(160.dp),
-                contentScale = ContentScale.Fit
-            )
-
+            PuzzleBotMascotContainer(size = 180.dp, withBounce = false) {
+                Image(
+                    painter = painterResource(R.drawable.robot),
+                    contentDescription = "PuzzleBot Mascot",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            //welcome Title
             Text(
-                text = "Welcome to PuzzleBot!",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center
+                text = "Welcome Back! 👋",
+                fontSize = 36.sp,
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.Center,
+                color = BrightOrange,
+                letterSpacing = 1.sp
             )
 
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
 
             //user Type Selector
             Text(
                 text = "I am a...",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
 
+            //segmented buttons for user type
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth(0.85f)
             ) {
+
                 //button for kid
                 SegmentedButton(
                     selected = viewModel.userType == UserType.KID,
@@ -153,12 +161,12 @@ fun LoginScreen(
                             Icon(
                                 imageVector = Icons.Default.ChildCare,
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
                 ) {
-                    Text("Kid")
+                    Text("Kid", style = MaterialTheme.typography.titleMedium)
                 }
 
 
@@ -172,144 +180,123 @@ fun LoginScreen(
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
                 ) {
-                    Text("Parent")
+                    Text("Parent", style = MaterialTheme.typography.titleMedium)
                 }
             }
-
 
             Spacer(modifier = Modifier.height(24.dp))
 
             //login Form Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp)
-                ) {
-                    //email Field
-                    OutlinedTextField(
-                        value = viewModel.username,
-                        onValueChange = { viewModel.username = it },
-                        label = { Text("Email") },
-                        placeholder = { Text("your@email.com") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Email,
-                                contentDescription = null
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next
-                        ),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            PuzzleBotCard {
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    //password Field
-                    OutlinedTextField(
-                        value = viewModel.password,
-                        onValueChange = { viewModel.password = it },
-                        label = { Text("Password") },
-                        placeholder = { Text("••••••••") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = null
-                            )
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
-                                Icon(
-                                    imageVector = if (viewModel.passwordVisible)
-                                        Icons.Default.Visibility
-                                    else
-                                        Icons.Default.VisibilityOff,
-                                    contentDescription = if (viewModel.passwordVisible)
-                                        "Hide password"
-                                    else
-                                        "Show password"
-                                )
-                            }
-                        },
-                        visualTransformation = if (viewModel.passwordVisible)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = { viewModel.onHandleLogin() }
-                        ),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    //forgot Password Link
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = {
-                                Toast.makeText(
-                                    context,
-                                    "Password reset link sent to your email",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        ) {
-                            Text(
-                                text = "Forgot Password?",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    //login Button
-                    Button(
-                        onClick = { viewModel.onHandleLogin() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                    ) {
-                        Text("Log In")
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    //register Link
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Don't have an account?",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                //email Field
+                PuzzleBotTextField(
+                    value = viewModel.username,
+                    onValueChange = { viewModel.username = it },
+                    label = "Email",
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = null
                         )
-                        TextButton(
-                            onClick = { navController.navigate("register_screen") }
-                        ) {
-                            Text("Register")
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                // Password Field
+                PuzzleBotTextField(
+                    value = viewModel.password,
+                    onValueChange = { viewModel.password = it },
+                    label = "Password",
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+                            Icon(
+                                imageVector = if (viewModel.passwordVisible)
+                                    Icons.Default.Visibility
+                                else
+                                    Icons.Default.VisibilityOff,
+                                contentDescription = if (viewModel.passwordVisible)
+                                    "Hide password"
+                                else
+                                    "Show password"
+                            )
                         }
-                    }
+                    },
+                    visualTransformation = if (viewModel.passwordVisible)
+                        VisualTransformation.None
+                    else
+                        PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { viewModel.onHandleLogin() }
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                //forgot Password Link
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    PuzzleBotTextButton(
+                        text = "Forgot Password? 🔑",
+                        onClick = {
+                            Toast.makeText(
+                                context,
+                                "Password reset link sent! 📧",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                //login Button
+                PuzzleBotPrimaryButton(
+                    text = "Let's Go! 🚀",
+                    onClick = { viewModel.onHandleLogin() },
+                    modifier = Modifier
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //register Link
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "New here?",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    PuzzleBotTextButton(
+                        text = "Join Now! ✨",
+                        onClick = { navController.navigate("register_screen") }
+                    )
                 }
             }
 
