@@ -315,7 +315,7 @@ fun PuzzleBotTitle(
     Text(
         text = text,
         modifier = modifier,
-        fontSize = 48.sp,
+        fontSize = 32.sp,
         fontWeight = FontWeight.ExtraBold,
         textAlign = TextAlign.Center,
         color = color,
