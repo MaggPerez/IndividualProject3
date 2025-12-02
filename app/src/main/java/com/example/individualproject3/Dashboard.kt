@@ -111,12 +111,12 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Welcome Header
-            ProfileHeader(username = viewModel.loggedInUsername)
+            //welcome Header
+            ProfileHeader(username = username)
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Title
+            //title
             PuzzleBotTitle(
                 text = "Choose Your Level!",
                 color = BrightOrange
@@ -125,7 +125,7 @@ fun DashboardScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             PuzzleBotSubtitle(
-                text = "🎮 Pick a difficulty and start coding! 🚀",
+                text = "🎮 Pick a difficulty and start playing! 🚀",
                 color = BrightBlue
             )
 
@@ -210,7 +210,7 @@ fun DashboardScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "You're doing great, ${viewModel.loggedInUsername}!",
+                        text = "You're doing great, ${username}!",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary,
