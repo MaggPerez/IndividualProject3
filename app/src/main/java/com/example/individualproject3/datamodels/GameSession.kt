@@ -2,6 +2,7 @@ package com.example.individualproject3.datamodels
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.individualproject3.UserModel
 
@@ -14,7 +15,8 @@ import com.example.individualproject3.UserModel
             //if user is deleted, their sessions are too
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["kidId"])]
 )
 data class GameSession(
     @PrimaryKey(autoGenerate = true)
