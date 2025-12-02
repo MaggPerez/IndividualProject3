@@ -93,6 +93,14 @@ fun LoginScreen(
                 is UiEvent.NavigateToMain -> {
                     navController.navigate("main_screen")
                 }
+                is UiEvent.NavigateToDashboard -> {
+                    //navigate to dashboard (username is stored in ViewModel)
+                    navController.navigate("dashboard_screen") {
+
+                        //clear the back stack so user can't go back to login
+                        popUpTo("main_screen") { inclusive = false }
+                    }
+                }
             }
         }
     }
@@ -198,7 +206,7 @@ fun LoginScreen(
                 PuzzleBotTextField(
                     value = viewModel.username,
                     onValueChange = { viewModel.username = it },
-                    label = "Email",
+                    label = "Username",
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Email,

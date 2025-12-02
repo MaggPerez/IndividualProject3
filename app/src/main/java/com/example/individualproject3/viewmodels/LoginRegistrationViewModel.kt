@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 sealed class UiEvent {
     data class ShowToast(val message: String) : UiEvent()
     data object NavigateToMain : UiEvent()
+    data object NavigateToDashboard : UiEvent()
 }
 
 class LoginRegistrationViewModel(
@@ -31,6 +32,10 @@ class LoginRegistrationViewModel(
     var username by mutableStateOf("")
     var password by mutableStateOf("")
     var passwordVisible by mutableStateOf(false)
+        private set
+
+    //store logged-in user's username for dashboard display
+    var loggedInUsername by mutableStateOf("")
         private set
 
     //registration
@@ -56,11 +61,27 @@ class LoginRegistrationViewModel(
     }
 
 
-    fun onHandleLogin(){
+    fun onHandleLogin(): Unit {
         //logic for login
+        if(username.isBlank() && password.isBlank()) {
+            viewModelScope.launch {
+                _uiEvent.emit(UiEvent.ShowToast("Please enter username and password"))
+            }
+            return
+        }
+
         viewModelScope.launch {
-            _uiEvent.emit(UiEvent.ShowToast("Login functionality coming soon!"))
-            _uiEvent.emit(UiEvent.NavigateToMain)
+            val user = userRepository.getUserByUsername(username)
+            if(user == null || user.password != password) {
+                _uiEvent.emit(UiEvent.ShowToast("Invalid username or password"))
+            } else {
+
+                //store the logged-in user's username in ViewModel
+                loggedInUsername = user.username
+
+                //navigate to dashboard
+                _uiEvent.emit(UiEvent.NavigateToDashboard)
+            }
         }
     }
 
@@ -104,6 +125,12 @@ class LoginRegistrationViewModel(
         viewModelScope.launch {
             userRepository.registerUser(newUser)
             _uiEvent.emit(UiEvent.ShowToast("Registration successful"))
+
+            //store the new user's username in ViewModel
+            loggedInUsername = createUsername
+
+            //navigate to dashboard
+            _uiEvent.emit(UiEvent.NavigateToDashboard)
         }
 
         return true

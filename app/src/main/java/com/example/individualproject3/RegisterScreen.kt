@@ -92,6 +92,14 @@ fun RegisterScreen(
                 is UiEvent.NavigateToMain -> {
                     navController.navigate("main_screen")
                 }
+                is UiEvent.NavigateToDashboard -> {
+                    //navigate to dashboard after successful registration
+                    navController.navigate("dashboard_screen") {
+
+                        //clear the back stack so user can't go back to registration
+                        popUpTo("main_screen") { inclusive = false }
+                    }
+                }
             }
         }
     }
@@ -340,9 +348,8 @@ fun RegisterScreen(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            if (viewModel.onHandleRegistration()) {
-                                navController.navigate("main_screen")
-                            }
+                            // Navigation will be handled by LaunchedEffect after successful registration
+                            viewModel.onHandleRegistration()
                         }
                     )
                 )
@@ -353,9 +360,8 @@ fun RegisterScreen(
                 //register Button - Smaller version
                 Button(
                     onClick = {
-                        if (viewModel.onHandleRegistration()) {
-                            navController.navigate("main_screen")
-                        }
+                        // Navigation will be handled by LaunchedEffect after successful registration
+                        viewModel.onHandleRegistration()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

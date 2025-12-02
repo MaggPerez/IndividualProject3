@@ -22,5 +22,9 @@ fun Navigation(){
             RegisterScreen(navController)
         }
 
+        composable("dashboard_screen") {
+            DashboardScreen(navController)
+        }
+
     }
 }
