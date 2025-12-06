@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -54,11 +55,21 @@ fun GameScreen(
 ) {
     // Get puzzles for this level
     val puzzles = remember { getPuzzlesForLevel(level) }
-    var currentPuzzleIndex by remember { mutableStateOf(0) }
+    var currentPuzzleIndex by rememberSaveable { mutableStateOf(0) }
 
-    // Load first puzzle when screen opens
+    // Load puzzle when screen opens or when puzzle index changes
     LaunchedEffect(currentPuzzleIndex) {
-        viewModel.loadPuzzle(puzzles[currentPuzzleIndex])
+        // Check if we need to restore the current puzzle
+        val savedPuzzleId = viewModel.getSavedPuzzleId()
+        val currentPuzzle = puzzles[currentPuzzleIndex]
+
+        if (savedPuzzleId == currentPuzzle.puzzleId) {
+            // Restoring: load puzzle but skip resetting state
+            viewModel.loadPuzzle(currentPuzzle, skipIfAlreadyLoaded = true)
+        } else {
+            // New puzzle: load and reset state
+            viewModel.loadPuzzle(currentPuzzle)
+        }
     }
 
     val currentPuzzle = viewModel.currentPuzzle

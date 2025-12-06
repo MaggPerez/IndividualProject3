@@ -3,6 +3,7 @@ package com.example.individualproject3.viewmodels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.individualproject3.datamodels.GameRepository
@@ -67,43 +68,106 @@ sealed class GameState {
 class GameViewModel(
     private val gameRepository: GameRepository,
     private val username: String,
-    private val userId: Int
+    private val userId: Int,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    //keys for SavedStateHandle
+    companion object {
+        private const val KEY_PUZZLE_ID = "puzzle_id"
+        private const val KEY_PUZZLE_LEVEL = "puzzle_level"
+        private const val KEY_PUZZLE_GAME_NUMBER = "puzzle_game_number"
+        private const val KEY_COMMAND_QUEUE = "command_queue"
+        private const val KEY_ROBOT_ROW = "robot_row"
+        private const val KEY_ROBOT_COL = "robot_col"
+        private const val KEY_GAME_STATE = "game_state"
+        private const val KEY_ATTEMPTS = "attempts"
+        private const val KEY_SCORE = "score"
+    }
 
     // Current puzzle configuration
     var currentPuzzle by mutableStateOf<PuzzleConfig?>(null)
         private set
 
     // Command queue (list of directions)
-    var commandQueue by mutableStateOf<List<Direction>>(emptyList())
+    var commandQueue by mutableStateOf<List<Direction>>(
+        savedStateHandle.get<Array<String>>(KEY_COMMAND_QUEUE)?.mapNotNull {
+            try { Direction.valueOf(it) } catch (e: Exception) { null }
+        } ?: emptyList()
+    )
         private set
 
     // Robot state
-    var robotState by mutableStateOf<RobotState?>(null)
+    var robotState by mutableStateOf<RobotState?>(
+        savedStateHandle.get<Int>(KEY_ROBOT_ROW)?.let { row ->
+            savedStateHandle.get<Int>(KEY_ROBOT_COL)?.let { col ->
+                RobotState(Position(row, col))
+            }
+        }
+    )
         private set
 
     // Game execution state
-    var gameState by mutableStateOf<GameState>(GameState.Idle)
+    var gameState by mutableStateOf<GameState>(
+        when (savedStateHandle.get<String>(KEY_GAME_STATE)) {
+            "Success" -> GameState.Success
+            "Failed" -> GameState.Failed
+            "Running" -> GameState.Idle // Reset running state
+            else -> GameState.Idle
+        }
+    )
         private set
 
     // Attempts counter
-    var attempts by mutableStateOf(0)
+    var attempts by mutableStateOf(savedStateHandle.get<Int>(KEY_ATTEMPTS) ?: 0)
         private set
 
     // Score
-    var score by mutableStateOf(0)
+    var score by mutableStateOf(savedStateHandle.get<Int>(KEY_SCORE) ?: 0)
         private set
+
+    /**
+     * Get saved puzzle ID for restoration
+     */
+    fun getSavedPuzzleId(): Int? = savedStateHandle.get<Int>(KEY_PUZZLE_ID)
 
     /**
      * Load a puzzle
      */
-    fun loadPuzzle(puzzle: PuzzleConfig) {
+    fun loadPuzzle(puzzle: PuzzleConfig, skipIfAlreadyLoaded: Boolean = false) {
+        // Skip loading if we're restoring and the puzzle is already loaded
+        if (skipIfAlreadyLoaded && currentPuzzle?.puzzleId == puzzle.puzzleId) {
+            return
+        }
+
+        // Only reset state if loading a new puzzle
+        val isNewPuzzle = currentPuzzle?.puzzleId != puzzle.puzzleId
         currentPuzzle = puzzle
-        robotState = RobotState(position = puzzle.startPosition)
-        commandQueue = emptyList()
-        gameState = GameState.Idle
-        attempts = 0
-        score = 0
+
+        if (isNewPuzzle) {
+            // Reset everything for a new puzzle
+            robotState = RobotState(position = puzzle.startPosition)
+            commandQueue = emptyList()
+            gameState = GameState.Idle
+            attempts = 0
+            score = 0
+
+            // Save puzzle info to state
+            savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
+            savedStateHandle[KEY_PUZZLE_LEVEL] = puzzle.level
+            savedStateHandle[KEY_PUZZLE_GAME_NUMBER] = puzzle.gameNumber
+            savedStateHandle[KEY_ROBOT_ROW] = puzzle.startPosition.row
+            savedStateHandle[KEY_ROBOT_COL] = puzzle.startPosition.col
+            savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
+            savedStateHandle[KEY_GAME_STATE] = "Idle"
+            savedStateHandle[KEY_ATTEMPTS] = 0
+            savedStateHandle[KEY_SCORE] = 0
+        } else {
+            // Just update puzzle reference, keep existing state
+            savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
+            savedStateHandle[KEY_PUZZLE_LEVEL] = puzzle.level
+            savedStateHandle[KEY_PUZZLE_GAME_NUMBER] = puzzle.gameNumber
+        }
     }
 
     /**
@@ -112,6 +176,7 @@ class GameViewModel(
     fun addCommand(direction: Direction) {
         if (commandQueue.size < (currentPuzzle?.maxCommands ?: 10)) {
             commandQueue = commandQueue + direction
+            savedStateHandle[KEY_COMMAND_QUEUE] = commandQueue.map { it.name }.toTypedArray()
         }
     }
 
@@ -121,6 +186,7 @@ class GameViewModel(
     fun removeLastCommand() {
         if (commandQueue.isNotEmpty()) {
             commandQueue = commandQueue.dropLast(1)
+            savedStateHandle[KEY_COMMAND_QUEUE] = commandQueue.map { it.name }.toTypedArray()
         }
     }
 
@@ -129,20 +195,30 @@ class GameViewModel(
      */
     fun clearCommands() {
         commandQueue = emptyList()
+        savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
     }
 
     /**
      * Execute the command queue (run the robot)
      */
     fun runCommands() {
+
+        // Prevent multiple runs or invalid state
         if (currentPuzzle == null || commandQueue.isEmpty() || gameState == GameState.Running) {
             return
         }
 
+        // Increment attempts
         attempts++
+        savedStateHandle[KEY_ATTEMPTS] = attempts
         gameState = GameState.Running
+        savedStateHandle[KEY_GAME_STATE] = "Running"
 
+
+        // Launch coroutine for command execution
         viewModelScope.launch {
+
+            // Initialize robot position
             val puzzle = currentPuzzle!!
             var currentPosition = puzzle.startPosition
             robotState = RobotState(position = currentPosition, isActive = true)
@@ -157,11 +233,17 @@ class GameViewModel(
                 if (isValidPosition(newPosition, puzzle)) {
                     currentPosition = newPosition
                     robotState = RobotState(position = currentPosition, isActive = true)
+                    savedStateHandle[KEY_ROBOT_ROW] = currentPosition.row
+                    savedStateHandle[KEY_ROBOT_COL] = currentPosition.col
 
                     // Check if goal is reached
                     if (currentPosition == puzzle.goalPosition) {
                         gameState = GameState.Success
+
+                        // Save success state
+                        savedStateHandle[KEY_GAME_STATE] = "Success"
                         calculateScore(puzzle)
+                        savedStateHandle[KEY_SCORE] = score
                         saveGameSession(puzzle, success = true)
                         robotState = RobotState(position = currentPosition, isActive = false)
                         return@launch
@@ -169,6 +251,7 @@ class GameViewModel(
                 } else {
                     // Hit a wall or invalid position
                     gameState = GameState.Failed
+                    savedStateHandle[KEY_GAME_STATE] = "Failed"
                     saveGameSession(puzzle, success = false)
                     robotState = RobotState(position = currentPosition, isActive = false)
                     return@launch
@@ -178,6 +261,7 @@ class GameViewModel(
             // Commands executed but goal not reached
             if (currentPosition != puzzle.goalPosition) {
                 gameState = GameState.Failed
+                savedStateHandle[KEY_GAME_STATE] = "Failed"
                 saveGameSession(puzzle, success = false)
             }
 
@@ -266,6 +350,11 @@ class GameViewModel(
             robotState = RobotState(position = puzzle.startPosition)
             commandQueue = emptyList()
             gameState = GameState.Idle
+
+            savedStateHandle[KEY_ROBOT_ROW] = puzzle.startPosition.row
+            savedStateHandle[KEY_ROBOT_COL] = puzzle.startPosition.col
+            savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
+            savedStateHandle[KEY_GAME_STATE] = "Idle"
         }
     }
 
@@ -278,5 +367,10 @@ class GameViewModel(
         gameState = GameState.Idle
         attempts = 0
         score = 0
+
+        savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
+        savedStateHandle[KEY_GAME_STATE] = "Idle"
+        savedStateHandle[KEY_ATTEMPTS] = 0
+        savedStateHandle[KEY_SCORE] = 0
     }
 }

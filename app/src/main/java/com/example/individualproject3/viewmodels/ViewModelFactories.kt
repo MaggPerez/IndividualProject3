@@ -1,7 +1,10 @@
 package com.example.individualproject3.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.individualproject3.datamodels.GameRepository
 import com.example.individualproject3.datamodels.UserRepository
 
@@ -22,17 +25,18 @@ class LoginRegistrationViewModelFactory(
 }
 
 /**
- * Factory for creating GameViewModel with repository dependencies
+ * Factory for creating GameViewModel with repository dependencies and SavedStateHandle
  */
 class GameViewModelFactory(
     private val gameRepository: GameRepository,
     private val username: String,
     private val userId: Int
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
+            val savedStateHandle = extras.createSavedStateHandle()
             @Suppress("UNCHECKED_CAST")
-            return GameViewModel(gameRepository, username, userId) as T
+            return GameViewModel(gameRepository, username, userId, savedStateHandle) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
