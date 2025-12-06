@@ -495,11 +495,67 @@ fun getEasyPuzzles(): List<PuzzleConfig> {
 }
 
 /**
- * Normal level puzzles (Level 2) - Placeholder
+ * Normal level puzzles (Level 2)
  */
 fun getNormalPuzzles(): List<PuzzleConfig> {
-    // TODO: Implement normal puzzles
-    return getEasyPuzzles() // Temporary
+    return listOf(
+        // Puzzle 1: "The Corridor Maze" - Navigate through narrow corridors
+        PuzzleConfig(
+            puzzleId = 4,
+            level = 2,
+            gameNumber = 1,
+            gridSize = 6,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL),
+                listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(5, 5),
+            maxCommands = 14
+        ),
+
+        // Puzzle 2: "The Zigzag Challenge" - Must navigate in a zigzag pattern
+        PuzzleConfig(
+            puzzleId = 5,
+            level = 2,
+            gameNumber = 2,
+            gridSize = 6,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL),
+                listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(5, 5),
+            maxCommands = 13
+        ),
+
+        // Puzzle 3: "The U-Turn Challenge" - Must navigate around a U-shaped wall barrier
+        PuzzleConfig(
+            puzzleId = 6,
+            level = 2,
+            gameNumber = 3,
+            gridSize = 6,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.WALL),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.GOAL),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(1, 5),
+            maxCommands = 12
+        )
+    )
 }
 
 /**
