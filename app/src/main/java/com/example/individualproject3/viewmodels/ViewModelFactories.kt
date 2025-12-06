@@ -21,6 +21,23 @@ class LoginRegistrationViewModelFactory(
     }
 }
 
+/**
+ * Factory for creating GameViewModel with repository dependencies
+ */
+class GameViewModelFactory(
+    private val gameRepository: GameRepository,
+    private val username: String,
+    private val userId: Int
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return GameViewModel(gameRepository, username, userId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+    }
+}
+
 //ViewModelFactories templates
 // class AnotherViewModelFactory(
 //     private val application: Application
