@@ -38,6 +38,10 @@ class LoginRegistrationViewModel(
     var loggedInUsername by mutableStateOf("")
         private set
 
+    //store logged-in user's ID for game sessions
+    var loggedInUserId by mutableStateOf(0)
+        private set
+
     //registration
     var createFirstName by mutableStateOf("")
     var createLastName by mutableStateOf("")
@@ -76,8 +80,9 @@ class LoginRegistrationViewModel(
                 _uiEvent.emit(UiEvent.ShowToast("Invalid username or password"))
             } else {
 
-                //store the logged-in user's username in ViewModel
+                //store the logged-in user's username and ID in ViewModel
                 loggedInUsername = user.username
+                loggedInUserId = user.id
 
                 //navigate to dashboard
                 _uiEvent.emit(UiEvent.NavigateToDashboard)
@@ -126,8 +131,12 @@ class LoginRegistrationViewModel(
             userRepository.registerUser(newUser)
             _uiEvent.emit(UiEvent.ShowToast("Registration successful"))
 
-            //store the new user's username in ViewModel
+            //get the newly registered user to retrieve their ID
+            val registeredUser = userRepository.getUserByUsername(createUsername)
+
+            //store the new user's username and ID in ViewModel
             loggedInUsername = createUsername
+            loggedInUserId = registeredUser?.id ?: 0
 
             //navigate to dashboard
             _uiEvent.emit(UiEvent.NavigateToDashboard)

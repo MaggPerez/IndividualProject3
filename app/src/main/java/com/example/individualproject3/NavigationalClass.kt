@@ -3,9 +3,11 @@ package com.example.individualproject3
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.individualproject3.datamodels.GameRepository
 import com.example.individualproject3.datamodels.UserDatabase
 import com.example.individualproject3.datamodels.UserRepository
@@ -46,6 +48,19 @@ fun Navigation(){
 
         composable("dashboard_screen") {
             DashboardScreen(navController, viewModel = sharedViewModel)
+        }
+
+        composable(
+            route = "level_screen/{level}",
+            arguments = listOf(navArgument("level") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val level = backStackEntry.arguments?.getInt("level") ?: 1
+            GameScreen(
+                level = level,
+                navController = navController,
+                username = sharedViewModel.loggedInUsername,
+                userId = sharedViewModel.loggedInUserId
+            )
         }
 
     }
