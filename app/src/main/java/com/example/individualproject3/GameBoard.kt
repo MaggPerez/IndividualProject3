@@ -4,6 +4,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,15 +21,32 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.*
 import kotlinx.coroutines.delay
+import kotlin.math.roundToInt
+
+/**
+ * Data class to hold drag state
+ */
+data class DragState(
+    val isDragging: Boolean = false,
+    val direction: Direction? = null,
+    val dragOffset: Offset = Offset.Zero,
+    val startPosition: Offset = Offset.Zero
+)
 
 /**
  * Main game board composable
@@ -45,45 +64,87 @@ fun GameBoard(
     onReset: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Game board grid
-        GameGrid(
-            puzzle = puzzle,
-            robotState = robotState,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+    // Drag state
+    var dragState by remember { mutableStateOf(DragState()) }
+    var queuePosition by remember { mutableStateOf(Offset.Zero) }
 
-        // Command queue display
-        CommandQueueDisplay(
-            commands = commandQueue,
-            maxCommands = puzzle.maxCommands,
-            onRemoveLast = onRemoveLastCommand,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Game board grid
+            GameGrid(
+                puzzle = puzzle,
+                robotState = robotState,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        // Command palette
-        CommandPalette(
-            onCommandSelected = onAddCommand,
-            enabled = gameState != GameState.Running && commandQueue.size < puzzle.maxCommands,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+            // Command queue display
+            CommandQueueDisplay(
+                commands = commandQueue,
+                maxCommands = puzzle.maxCommands,
+                onRemoveLast = onRemoveLastCommand,
+                isDragOver = dragState.isDragging,
+                onPositionChanged = { queuePosition = it },
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        // Control buttons
-        ControlButtons(
-            gameState = gameState,
-            hasCommands = commandQueue.isNotEmpty(),
-            onRun = onRun,
-            onReset = onReset,
-            onClear = onClearCommands
-        )
+            // Command palette
+            CommandPalette(
+                onCommandSelected = onAddCommand,
+                enabled = gameState != GameState.Running && commandQueue.size < puzzle.maxCommands,
+                onDragStart = { direction, position ->
+                    dragState = DragState(
+                        isDragging = true,
+                        direction = direction,
+                        dragOffset = Offset.Zero,
+                        startPosition = position
+                    )
+                },
+                onDrag = { offset ->
+                    dragState = dragState.copy(dragOffset = dragState.dragOffset + offset)
+                },
+                onDragEnd = {
+                    // Check if dropped on queue
+                    val currentPosition = dragState.startPosition + dragState.dragOffset
+                    dragState.direction?.let { direction ->
+                        if (dragState.isDragging) {
+                            // Simple overlap check - if drag ended near the queue area
+                            if (currentPosition.y < queuePosition.y + 100 && currentPosition.y > queuePosition.y - 100) {
+                                onAddCommand(direction)
+                            }
+                        }
+                    }
+                    dragState = DragState()
+                },
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        // Game state message
-        GameStateMessage(gameState = gameState)
+            // Control buttons
+            ControlButtons(
+                gameState = gameState,
+                hasCommands = commandQueue.isNotEmpty(),
+                onRun = onRun,
+                onReset = onReset,
+                onClear = onClearCommands
+            )
+
+            // Game state message
+            GameStateMessage(gameState = gameState)
+        }
+
+        // Drag preview overlay
+        dragState.direction?.let { direction ->
+            if (dragState.isDragging) {
+                DragPreview(
+                    direction = direction,
+                    offset = dragState.startPosition + dragState.dragOffset
+                )
+            }
+        }
     }
 }
 
@@ -222,12 +283,22 @@ fun CommandQueueDisplay(
     commands: List<Direction>,
     maxCommands: Int,
     onRemoveLast: () -> Unit,
+    isDragOver: Boolean = false,
+    onPositionChanged: (Offset) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(12.dp)),
+            .shadow(4.dp, RoundedCornerShape(12.dp))
+            .onGloballyPositioned { coordinates ->
+                onPositionChanged(coordinates.positionInRoot())
+            }
+            .border(
+                width = if (isDragOver) 3.dp else 0.dp,
+                color = if (isDragOver) BrightGreen else Color.Transparent,
+                shape = RoundedCornerShape(12.dp)
+            ),
         colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -347,6 +418,9 @@ fun CommandChip(
 fun CommandPalette(
     onCommandSelected: (Direction) -> Unit,
     enabled: Boolean,
+    onDragStart: (Direction, Offset) -> Unit = { _, _ -> },
+    onDrag: (Offset) -> Unit = {},
+    onDragEnd: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -378,28 +452,40 @@ fun CommandPalette(
                     icon = Icons.Default.ArrowUpward,
                     rotation = 0f,
                     onClick = { onCommandSelected(Direction.UP) },
-                    enabled = enabled
+                    enabled = enabled,
+                    onDragStart = onDragStart,
+                    onDrag = onDrag,
+                    onDragEnd = onDragEnd
                 )
                 DirectionButton(
                     direction = Direction.RIGHT,
                     icon = Icons.Default.ArrowForward,
                     rotation = 0f,
                     onClick = { onCommandSelected(Direction.RIGHT) },
-                    enabled = enabled
+                    enabled = enabled,
+                    onDragStart = onDragStart,
+                    onDrag = onDrag,
+                    onDragEnd = onDragEnd
                 )
                 DirectionButton(
                     direction = Direction.DOWN,
                     icon = Icons.Default.ArrowDownward,
                     rotation = 0f,
                     onClick = { onCommandSelected(Direction.DOWN) },
-                    enabled = enabled
+                    enabled = enabled,
+                    onDragStart = onDragStart,
+                    onDrag = onDrag,
+                    onDragEnd = onDragEnd
                 )
                 DirectionButton(
                     direction = Direction.LEFT,
                     icon = Icons.Default.ArrowBack,
                     rotation = 0f,
                     onClick = { onCommandSelected(Direction.LEFT) },
-                    enabled = enabled
+                    enabled = enabled,
+                    onDragStart = onDragStart,
+                    onDrag = onDrag,
+                    onDragEnd = onDragEnd
                 )
             }
         }
@@ -407,7 +493,7 @@ fun CommandPalette(
 }
 
 /**
- * Direction button
+ * Direction button with drag and drop support
  */
 @Composable
 fun DirectionButton(
@@ -415,39 +501,80 @@ fun DirectionButton(
     icon: ImageVector,
     rotation: Float,
     onClick: () -> Unit,
-    enabled: Boolean
+    enabled: Boolean,
+    onDragStart: (Direction, Offset) -> Unit = { _, _ -> },
+    onDrag: (Offset) -> Unit = {},
+    onDragEnd: () -> Unit = {}
 ) {
     var isPressed by remember { mutableStateOf(false) }
+    var buttonPosition by remember { mutableStateOf(Offset.Zero) }
+
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.9f else 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "scale"
     )
 
-    Button(
-        onClick = {
-            isPressed = true
-            onClick()
-        },
-        enabled = enabled,
+    Box(
         modifier = Modifier
             .size(70.dp)
+            .onGloballyPositioned { coordinates ->
+                buttonPosition = coordinates.positionInRoot()
+            }
+            .pointerInput(enabled) {
+                if (!enabled) return@pointerInput
+
+                // Detect tap gestures for click
+                detectTapGestures(
+                    onTap = {
+                        isPressed = true
+                        onClick()
+                    }
+                )
+            }
+            .pointerInput(enabled) {
+                if (!enabled) return@pointerInput
+
+                // Detect long press and drag
+                detectDragGesturesAfterLongPress(
+                    onDragStart = {
+                        onDragStart(direction, buttonPosition + Offset(35f, 35f)) // Center of button
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        onDrag(dragAmount)
+                    },
+                    onDragEnd = {
+                        onDragEnd()
+                    },
+                    onDragCancel = {
+                        onDragEnd()
+                    }
+                )
+            }
             .scale(scale),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = BrightGreen,
-            disabledContainerColor = Color.Gray
-        ),
-        shape = CircleShape,
-        contentPadding = PaddingValues(0.dp)
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = direction.name,
-            tint = TextOnColor,
+        // Button background
+        Box(
             modifier = Modifier
-                .size(36.dp)
-                .rotate(rotation)
-        )
+                .fillMaxSize()
+                .background(
+                    color = if (enabled) BrightGreen else Color.Gray,
+                    shape = CircleShape
+                )
+                .shadow(4.dp, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = direction.name,
+                tint = TextOnColor,
+                modifier = Modifier
+                    .size(36.dp)
+                    .rotate(rotation)
+            )
+        }
     }
 
     LaunchedEffect(isPressed) {
@@ -455,6 +582,46 @@ fun DirectionButton(
             delay(100)
             isPressed = false
         }
+    }
+}
+
+/**
+ * Drag preview that follows the user's finger
+ */
+@Composable
+fun DragPreview(
+    direction: Direction,
+    offset: Offset
+) {
+    val rotation = when (direction) {
+        Direction.UP -> 0f
+        Direction.RIGHT -> 90f
+        Direction.DOWN -> 180f
+        Direction.LEFT -> 270f
+    }
+
+    Box(
+        modifier = Modifier
+            .offset {
+                IntOffset(
+                    (offset.x - 35).roundToInt(), // Center the preview
+                    (offset.y - 35).roundToInt()
+                )
+            }
+            .size(70.dp)
+            .zIndex(1000f) // Ensure it's on top
+            .shadow(8.dp, CircleShape)
+            .background(BrightGreen.copy(alpha = 0.8f), CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowUpward,
+            contentDescription = direction.name,
+            tint = TextOnColor,
+            modifier = Modifier
+                .size(36.dp)
+                .rotate(rotation)
+        )
     }
 }
 
