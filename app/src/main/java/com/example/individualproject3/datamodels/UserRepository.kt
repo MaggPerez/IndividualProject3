@@ -46,6 +46,10 @@ class UserRepository(
         return user
     }
 
+    suspend fun getUserById(id: Int): UserModel {
+        return userDao.getUserById(id)
+    }
+
     suspend fun getAllKids(): List<UserModel> {
         return userDao.getAllKids()
     }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -58,6 +59,66 @@ fun DashboardScreen(
 ) {
     //get username from ViewModel (falls back to "Player" if empty)
     val username = viewModel.loggedInUsername.ifEmpty { "Player" }
+    val linkedParentName = viewModel.linkedParentName
+    val isModalVisible = viewModel.isLinkParentModalVisible
+
+    // Fetch dashboard data when screen loads
+    LaunchedEffect(Unit) {
+        viewModel.fetchKidDashboardData()
+    }
+
+    // Modal for entering invite code
+    if (isModalVisible) {
+        AlertDialog(
+            onDismissRequest = { viewModel.hideLinkParentModal() },
+            title = {
+                Text(
+                    text = "Enter Parent Invite Code",
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "Ask your parent for their 6-digit invite code found on their dashboard.",
+                        fontSize = 14.sp,
+                        color = TextSecondary
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = viewModel.linkParentInviteCode,
+                        onValueChange = { viewModel.updateLinkParentCode(it.uppercase()) },
+                        label = { Text("Invite Code") },
+                        singleLine = true,
+                        isError = viewModel.linkParentError != null,
+                        supportingText = {
+                            if (viewModel.linkParentError != null) {
+                                Text(viewModel.linkParentError!!, color = ErrorRed)
+                            }
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { viewModel.attemptLinkParent() },
+                    colors = ButtonDefaults.buttonColors(containerColor = BrightBlue)
+                ) {
+                    Text("Link Account")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.hideLinkParentModal() }) {
+                    Text("Cancel", color = TextSecondary)
+                }
+            },
+            containerColor = SurfaceWhite,
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
 
     PuzzleBotAnimatedBackground(modifier = modifier) {
         FloatingStars()
@@ -223,6 +284,58 @@ fun DashboardScreen(
                         tint = SunnyYellow,
                         modifier = Modifier.size(32.dp)
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Parent Linking Status Message
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .shadow(4.dp, RoundedCornerShape(16.dp))
+                    .clickable(enabled = linkedParentName == null) {
+                        if (linkedParentName == null) {
+                            viewModel.showLinkParentModal()
+                        }
+                    },
+                colors = CardDefaults.cardColors(
+                    containerColor = if (linkedParentName == null) PlayfulOrange.copy(alpha = 0.1f) else BrightGreen.copy(alpha = 0.1f)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = if (linkedParentName == null) Icons.Default.Link else Icons.Default.Person,
+                        contentDescription = null,
+                        tint = if (linkedParentName == null) PlayfulOrange else BrightGreen,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
+                    if (linkedParentName == null) {
+                        Text(
+                            text = "You're not linked to a parent. Get linked now!",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = PlayfulOrange,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = "You are linked with your parent: $linkedParentName",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = BrightGreen,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
 

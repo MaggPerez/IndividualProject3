@@ -49,6 +49,16 @@ class LoginRegistrationViewModel(
     var linkedKids by mutableStateOf<List<UserModel>>(emptyList())
         private set
 
+    //kid dashboard specific state
+    var linkedParentName by mutableStateOf<String?>(null)
+        private set
+    var isLinkParentModalVisible by mutableStateOf(false)
+        private set
+    var linkParentInviteCode by mutableStateOf("")
+        private set
+    var linkParentError by mutableStateOf<String?>(null)
+        private set
+
     //registration
     var createFirstName by mutableStateOf("")
     var createLastName by mutableStateOf("")
@@ -116,6 +126,59 @@ class LoginRegistrationViewModel(
                 inviteCode = userRepository.getOrGenerateInviteCode(user)
                 // Get linked kids
                 linkedKids = userRepository.getKidsForParent(user.id)
+            }
+        }
+    }
+
+    fun fetchKidDashboardData() {
+        if (loggedInUsername.isBlank()) return
+
+        viewModelScope.launch {
+            val user = userRepository.getUserByUsername(loggedInUsername)
+            if (user != null && user.userType == UserType.KID) {
+                if (user.parentId != null) {
+                    val parent = userRepository.getUserById(user.parentId!!)
+                    linkedParentName = parent.firstName // Or username, depending on preference
+                } else {
+                    linkedParentName = null
+                }
+            }
+        }
+    }
+
+    fun showLinkParentModal() {
+        isLinkParentModalVisible = true
+        linkParentInviteCode = ""
+        linkParentError = null
+    }
+
+    fun hideLinkParentModal() {
+        isLinkParentModalVisible = false
+    }
+
+    fun updateLinkParentCode(code: String) {
+        linkParentInviteCode = code
+        if (linkParentError != null) linkParentError = null
+    }
+
+    fun attemptLinkParent() {
+        if (linkParentInviteCode.isBlank()) {
+            linkParentError = "Please enter a code"
+            return
+        }
+
+        viewModelScope.launch {
+            val user = userRepository.getUserByUsername(loggedInUsername)
+            if (user != null) {
+                val success = userRepository.linkChildToParent(user, linkParentInviteCode)
+                if (success) {
+                    // Refresh data to get parent name
+                    fetchKidDashboardData()
+                    hideLinkParentModal()
+                    _uiEvent.emit(UiEvent.ShowToast("Successfully linked to parent!"))
+                } else {
+                    linkParentError = "Invalid invite code"
+                }
             }
         }
     }
