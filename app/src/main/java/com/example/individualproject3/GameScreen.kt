@@ -658,7 +658,7 @@ fun getVeryHardPuzzles(): List<PuzzleConfig> {
             startPosition = Position(0, 0),
             goalPosition = Position(7, 7),
             keys = listOf(Position(1, 6), Position(3, 5), Position(5, 2)), // 3 keys strategically placed
-            traps = listOf(Position(2, 3), Position(4, 2), Position(5, 6), Position(6, 5)), // 4 traps blocking key routes
+            traps = listOf(Position(2, 3), Position(4, 2), Position(1, 7), Position(6, 5)), // 4 traps blocking key routes
             maxCommands = 28
         ),
 

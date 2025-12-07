@@ -220,7 +220,9 @@ fun GameGrid(
                             isTrap = isTrap,
                             trapActivated = trapsActivated,
                             isRobotActive = robotState?.isActive ?: false,
-                            modifier = Modifier.size(if (puzzle.gridSize > 6) 50.dp else 60.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
                         )
                     }
                 }
