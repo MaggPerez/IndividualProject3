@@ -51,7 +51,7 @@ fun Navigation(){
         }
 
         composable("parent_dashboard_screen") {
-            ParentDashboardScreen(navController)
+            ParentDashboardScreen(navController, viewModel = sharedViewModel)
         }
 
         composable(

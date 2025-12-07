@@ -43,6 +43,12 @@ class LoginRegistrationViewModel(
     var loggedInUserId by mutableStateOf(0)
         private set
 
+    //parent dashboard specific state
+    var inviteCode by mutableStateOf("")
+        private set
+    var linkedKids by mutableStateOf<List<UserModel>>(emptyList())
+        private set
+
     //registration
     var createFirstName by mutableStateOf("")
     var createLastName by mutableStateOf("")
@@ -97,6 +103,21 @@ class LoginRegistrationViewModel(
 
     fun togglePasswordVisibility() {
         passwordVisible = !passwordVisible
+    }
+
+
+    fun fetchParentDashboardData() {
+        if (loggedInUsername.isBlank()) return
+
+        viewModelScope.launch {
+            val user = userRepository.getUserByUsername(loggedInUsername)
+            if (user != null && user.userType == UserType.PARENT) {
+                // Get or generate invite code
+                inviteCode = userRepository.getOrGenerateInviteCode(user)
+                // Get linked kids
+                linkedKids = userRepository.getKidsForParent(user.id)
+            }
+        }
     }
 
 
