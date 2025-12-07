@@ -59,6 +59,7 @@ fun GameBoard(
     gameState: GameState,
     keysCollected: Int = 0,
     remainingKeys: List<Position> = emptyList(),
+    trapsActivated: Boolean = false,
     onAddCommand: (Direction) -> Unit,
     onRemoveLastCommand: () -> Unit,
     onClearCommands: () -> Unit,
@@ -91,6 +92,7 @@ fun GameBoard(
                 puzzle = puzzle,
                 robotState = robotState,
                 remainingKeys = remainingKeys,
+                trapsActivated = trapsActivated,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -168,6 +170,7 @@ fun GameGrid(
     puzzle: PuzzleConfig,
     robotState: RobotState?,
     remainingKeys: List<Position> = emptyList(),
+    trapsActivated: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -193,11 +196,14 @@ fun GameGrid(
                         val cellType = puzzle.board[row][col]
                         val hasRobot = robotState?.position == position
                         val hasKey = position in remainingKeys
+                        val isTrap = position in puzzle.traps
 
                         GameCell(
                             cellType = cellType,
                             hasRobot = hasRobot,
                             hasKey = hasKey,
+                            isTrap = isTrap,
+                            trapActivated = trapsActivated,
                             isRobotActive = robotState?.isActive ?: false,
                             modifier = Modifier.size(if (puzzle.gridSize > 6) 50.dp else 60.dp)
                         )
@@ -216,19 +222,28 @@ fun GameCell(
     cellType: CellType,
     hasRobot: Boolean,
     hasKey: Boolean = false,
+    isTrap: Boolean = false,
+    trapActivated: Boolean = false,
     isRobotActive: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = when (cellType) {
-        CellType.EMPTY -> Color.White
-        CellType.WALL -> Color.Gray
-        CellType.START -> BrightGreen.copy(alpha = 0.3f)
-        CellType.GOAL -> SunnyYellow.copy(alpha = 0.5f)
+    // Determine background color based on trap state
+    val backgroundColor = when {
+        isTrap && trapActivated -> ErrorRed.copy(alpha = 0.8f) // Solid red when activated
+        isTrap && !trapActivated -> ErrorRed.copy(alpha = 0.2f) // Faint red when inactive
+        cellType == CellType.EMPTY -> Color.White
+        cellType == CellType.WALL -> Color.Gray
+        cellType == CellType.START -> BrightGreen.copy(alpha = 0.3f)
+        cellType == CellType.GOAL -> SunnyYellow.copy(alpha = 0.5f)
+        cellType == CellType.TRAP -> ErrorRed.copy(alpha = 0.2f) // Faint red for TRAP cell type (fallback)
+        else -> Color.White
     }
 
-    val borderColor = when (cellType) {
-        CellType.START -> BrightGreen
-        CellType.GOAL -> SunnyYellow
+    val borderColor = when {
+        isTrap && trapActivated -> ErrorRed // Solid red border when activated
+        isTrap && !trapActivated -> ErrorRed.copy(alpha = 0.4f) // Faint red border when inactive
+        cellType == CellType.START -> BrightGreen
+        cellType == CellType.GOAL -> SunnyYellow
         else -> Color.LightGray
     }
 

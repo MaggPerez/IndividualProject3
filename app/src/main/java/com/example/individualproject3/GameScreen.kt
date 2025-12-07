@@ -144,6 +144,7 @@ fun GameScreen(
                         gameState = viewModel.gameState,
                         keysCollected = viewModel.keysCollected,
                         remainingKeys = viewModel.remainingKeys,
+                        trapsActivated = viewModel.trapsActivated,
                         onAddCommand = { direction -> viewModel.addCommand(direction) },
                         onRemoveLastCommand = { viewModel.removeLastCommand() },
                         onClearCommands = { viewModel.clearCommands() },
@@ -565,7 +566,7 @@ fun getNormalPuzzles(): List<PuzzleConfig> {
  */
 fun getHardPuzzles(): List<PuzzleConfig> {
     return listOf(
-        // Puzzle 1: "The First Key" - Introduction to key mechanics (1 key)
+        // Puzzle 1: "The First Key" - Introduction to key mechanics (1 key) with trap
         PuzzleConfig(
             puzzleId = 7,
             level = 3,
@@ -583,10 +584,11 @@ fun getHardPuzzles(): List<PuzzleConfig> {
             startPosition = Position(0, 0),
             goalPosition = Position(6, 6),
             keys = listOf(Position(3, 2)), // 1 key to collect
+            traps = listOf(Position(4, 2)), // Trap blocks the direct path after collecting the key
             maxCommands = 18
         ),
 
-        // Puzzle 2: "The Twin Keys" - Collect 2 keys before reaching goal
+        // Puzzle 2: "The Twin Keys" - Collect 2 keys before reaching goal with traps
         PuzzleConfig(
             puzzleId = 8,
             level = 3,
@@ -604,10 +606,11 @@ fun getHardPuzzles(): List<PuzzleConfig> {
             startPosition = Position(0, 0),
             goalPosition = Position(6, 6),
             keys = listOf(Position(2, 4), Position(4, 5)), // 2 keys to collect
+            traps = listOf(Position(3, 1), Position(5, 5)), // Two strategic traps
             maxCommands = 20
         ),
 
-        // Puzzle 3: "The Triple Challenge" - Collect all 3 keys strategically placed
+        // Puzzle 3: "The Triple Challenge" - Collect all 3 keys with multiple traps
         PuzzleConfig(
             puzzleId = 9,
             level = 3,
@@ -625,6 +628,7 @@ fun getHardPuzzles(): List<PuzzleConfig> {
             startPosition = Position(0, 0),
             goalPosition = Position(6, 6),
             keys = listOf(Position(1, 4), Position(2, 6), Position(4, 1)), // 3 keys to collect
+            traps = listOf(Position(2, 1), Position(4, 6), Position(5, 4)), // Three strategic traps
             maxCommands = 26
         )
     )

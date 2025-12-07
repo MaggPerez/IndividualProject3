@@ -22,7 +22,7 @@ enum class Direction {
  * Cell types for the game board
  */
 enum class CellType {
-    EMPTY, WALL, START, GOAL
+    EMPTY, WALL, START, GOAL, TRAP
 }
 
 /**
@@ -50,7 +50,8 @@ data class PuzzleConfig(
     val startPosition: Position,
     val goalPosition: Position,
     val maxCommands: Int = 10,
-    val keys: List<Position> = emptyList() // Collectible key positions for Hard difficulty
+    val keys: List<Position> = emptyList(), // Collectible key positions for Hard difficulty
+    val traps: List<Position> = emptyList() // Trap positions that activate when a key is collected
 )
 
 /**
@@ -86,6 +87,7 @@ class GameViewModel(
         private const val KEY_SCORE = "score"
         private const val KEY_KEYS_COLLECTED = "keys_collected"
         private const val KEY_REMAINING_KEYS = "remaining_keys"
+        private const val KEY_TRAPS_ACTIVATED = "traps_activated"
     }
 
     // Current puzzle configuration
@@ -137,6 +139,10 @@ class GameViewModel(
     var remainingKeys by mutableStateOf<List<Position>>(emptyList())
         private set
 
+    // Trap activation state (false = faint/inactive, true = solid/active)
+    var trapsActivated by mutableStateOf(savedStateHandle.get<Boolean>(KEY_TRAPS_ACTIVATED) ?: false)
+        private set
+
     /**
      * Get saved puzzle ID for restoration
      */
@@ -164,6 +170,7 @@ class GameViewModel(
             score = 0
             keysCollected = 0
             remainingKeys = puzzle.keys.toList()
+            trapsActivated = false
 
             // Save puzzle info to state
             savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
@@ -176,6 +183,7 @@ class GameViewModel(
             savedStateHandle[KEY_ATTEMPTS] = 0
             savedStateHandle[KEY_SCORE] = 0
             savedStateHandle[KEY_KEYS_COLLECTED] = 0
+            savedStateHandle[KEY_TRAPS_ACTIVATED] = false
         } else {
             // Just update puzzle reference, keep existing state
             savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
@@ -255,6 +263,21 @@ class GameViewModel(
                         remainingKeys = remainingKeys.filter { it != currentPosition }
                         keysCollected++
                         savedStateHandle[KEY_KEYS_COLLECTED] = keysCollected
+
+                        // Activate traps when first key is collected
+                        if (keysCollected == 1 && puzzle.traps.isNotEmpty() && !trapsActivated) {
+                            trapsActivated = true
+                            savedStateHandle[KEY_TRAPS_ACTIVATED] = true
+                        }
+                    }
+
+                    // Check if robot hit an activated trap
+                    if (trapsActivated && currentPosition in puzzle.traps) {
+                        gameState = GameState.Failed
+                        savedStateHandle[KEY_GAME_STATE] = "Failed"
+                        saveGameSession(puzzle, success = false)
+                        robotState = RobotState(position = currentPosition, isActive = false)
+                        return@launch
                     }
 
                     // Check if goal is reached
@@ -381,12 +404,14 @@ class GameViewModel(
             gameState = GameState.Idle
             keysCollected = 0
             remainingKeys = puzzle.keys.toList()
+            trapsActivated = false
 
             savedStateHandle[KEY_ROBOT_ROW] = puzzle.startPosition.row
             savedStateHandle[KEY_ROBOT_COL] = puzzle.startPosition.col
             savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
             savedStateHandle[KEY_GAME_STATE] = "Idle"
             savedStateHandle[KEY_KEYS_COLLECTED] = 0
+            savedStateHandle[KEY_TRAPS_ACTIVATED] = false
         }
     }
 
@@ -401,11 +426,13 @@ class GameViewModel(
         score = 0
         keysCollected = 0
         remainingKeys = emptyList()
+        trapsActivated = false
 
         savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
         savedStateHandle[KEY_GAME_STATE] = "Idle"
         savedStateHandle[KEY_ATTEMPTS] = 0
         savedStateHandle[KEY_SCORE] = 0
         savedStateHandle[KEY_KEYS_COLLECTED] = 0
+        savedStateHandle[KEY_TRAPS_ACTIVATED] = false
     }
 }
