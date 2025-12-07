@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.individualproject3.UserModel
 
-@Database(entities = [UserModel::class, GameSession::class], version = 1, exportSchema = false)
+@Database(entities = [UserModel::class, GameSession::class], version = 2, exportSchema = false)
 @TypeConverters(UserTypeConverter::class)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao(): UserModelDao
@@ -21,6 +21,7 @@ abstract class UserDatabase : RoomDatabase() {
         fun getDatabase(context: Context): UserDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, UserDatabase::class.java, "user_database")
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }

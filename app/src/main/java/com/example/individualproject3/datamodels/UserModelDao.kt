@@ -39,4 +39,10 @@ interface UserModelDao {
     @Query("SELECT * FROM users WHERE parentId = :parentId")
     suspend fun getKidsForParent(parentId: Int): List<UserModel>
 
+    @Query("SELECT * FROM users WHERE inviteCode = :inviteCode AND userType = 'PARENT'")
+    suspend fun getParentByInviteCode(inviteCode: String): UserModel?
+
+    @Query("SELECT * FROM users WHERE email = :email")
+    suspend fun getUserByEmail(email: String): UserModel?
+
 }

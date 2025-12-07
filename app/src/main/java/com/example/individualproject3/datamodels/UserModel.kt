@@ -18,7 +18,10 @@ data class UserModel(
     var userType: UserType = UserType.KID, // Correctly typed to the enum
 
     //links kids to a parent. Null if the user is a parent
-    var parentId: Int? = null
+    var parentId: Int? = null,
+
+    //invite code for parents to share with their children. Null for kids
+    var inviteCode: String? = null
 )
 
 enum class UserType {
