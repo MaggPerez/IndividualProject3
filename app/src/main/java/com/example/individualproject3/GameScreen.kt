@@ -56,6 +56,12 @@ fun GameScreen(
     // Get puzzles for this level
     val puzzles = remember { getPuzzlesForLevel(level) }
     var currentPuzzleIndex by rememberSaveable { mutableStateOf(0) }
+    
+    // Start background music
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.playMusic(context)
+    }
 
     // Load puzzle when screen opens or when puzzle index changes
     LaunchedEffect(currentPuzzleIndex) {

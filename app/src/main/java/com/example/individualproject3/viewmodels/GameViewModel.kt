@@ -1,11 +1,14 @@
 package com.example.individualproject3.viewmodels
 
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.individualproject3.R
 import com.example.individualproject3.datamodels.GameRepository
 import com.example.individualproject3.datamodels.GameSession
 import kotlinx.coroutines.delay
@@ -90,6 +93,8 @@ class GameViewModel(
         private const val KEY_TRAPS_ACTIVATED = "traps_activated"
     }
 
+    private var mediaPlayer: MediaPlayer? = null
+
     // Current puzzle configuration
     var currentPuzzle by mutableStateOf<PuzzleConfig?>(null)
         private set
@@ -142,6 +147,33 @@ class GameViewModel(
     // Trap activation state (false = faint/inactive, true = solid/active)
     var trapsActivated by mutableStateOf(savedStateHandle.get<Boolean>(KEY_TRAPS_ACTIVATED) ?: false)
         private set
+
+    /**
+     * Initialize and play background music
+     */
+    fun playMusic(context: Context) {
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(context.applicationContext, R.raw.puzzlebot_music)
+            mediaPlayer?.isLooping = true
+            mediaPlayer?.start()
+        } else if (mediaPlayer?.isPlaying == false) {
+            mediaPlayer?.start()
+        }
+    }
+
+    /**
+     * Stop and release background music
+     */
+    fun stopMusic() {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopMusic()
+    }
 
     /**
      * Get saved puzzle ID for restoration
