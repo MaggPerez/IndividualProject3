@@ -20,6 +20,7 @@ sealed class UiEvent {
     data class ShowToast(val message: String) : UiEvent()
     data object NavigateToMain : UiEvent()
     data object NavigateToDashboard : UiEvent()
+    data object NavigateToParentDashboard : UiEvent()
 }
 
 class LoginRegistrationViewModel(
@@ -84,8 +85,12 @@ class LoginRegistrationViewModel(
                 loggedInUsername = user.username
                 loggedInUserId = user.id
 
-                //navigate to dashboard
-                _uiEvent.emit(UiEvent.NavigateToDashboard)
+                //navigate to appropriate dashboard based on user type
+                if (user.userType == UserType.PARENT) {
+                    _uiEvent.emit(UiEvent.NavigateToParentDashboard)
+                } else {
+                    _uiEvent.emit(UiEvent.NavigateToDashboard)
+                }
             }
         }
     }
@@ -138,8 +143,12 @@ class LoginRegistrationViewModel(
             loggedInUsername = createUsername
             loggedInUserId = registeredUser?.id ?: 0
 
-            //navigate to dashboard
-            _uiEvent.emit(UiEvent.NavigateToDashboard)
+            //navigate to appropriate dashboard based on user type
+            if (userType == UserType.PARENT) {
+                _uiEvent.emit(UiEvent.NavigateToParentDashboard)
+            } else {
+                _uiEvent.emit(UiEvent.NavigateToDashboard)
+            }
         }
 
         return true

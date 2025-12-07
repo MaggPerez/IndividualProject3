@@ -50,6 +50,10 @@ fun Navigation(){
             DashboardScreen(navController, viewModel = sharedViewModel)
         }
 
+        composable("parent_dashboard_screen") {
+            ParentDashboardScreen(navController)
+        }
+
         composable(
             route = "level_screen/{level}",
             arguments = listOf(navArgument("level") { type = NavType.IntType })

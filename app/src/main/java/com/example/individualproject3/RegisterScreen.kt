@@ -100,6 +100,14 @@ fun RegisterScreen(
                         popUpTo("main_screen") { inclusive = false }
                     }
                 }
+                is UiEvent.NavigateToParentDashboard -> {
+                    //navigate to parent dashboard after successful registration
+                    navController.navigate("parent_dashboard_screen") {
+
+                        //clear the back stack so user can't go back to registration
+                        popUpTo("main_screen") { inclusive = false }
+                    }
+                }
             }
         }
     }
