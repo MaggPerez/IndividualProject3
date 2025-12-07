@@ -72,6 +72,18 @@ class LogManager(private val context: Context) {
 
 
     /**
+     * logs a general message with timestamp
+     */
+    fun logMessage(message: String) {
+        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            .format(Date())
+
+        val logEntry = "[$timestamp] $message\n"
+        writeToFile(logEntry)
+    }
+
+
+    /**
      * function that writes to log file using "append"
      */
     private fun writeToFile(logEntry: String) {
