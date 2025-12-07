@@ -32,6 +32,14 @@ import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.*
 
 /**
+ * UI/UX Fixes
+ * todo: fix the three buttons at the bottom so that they are equal sizes and the texts are not wrapped, decrease font size if needed
+ * todo: when the player completes all puzzles in a level, add two buttons in the CompletionCard composable where one button takes them back to the dashboard and the other button takes them to the next level (easy -> normal -> hard -> very hard). If user completes very hard level, both buttons, show one button that takes them back to the dashboard.
+ * todo: for hard and very hard, fix the key counter card and warning card so that the texts are not awkwardly wrapped/spaced.
+ * todo: fix puzzle 2 in very hard level where one of the walls is highlighted red even though it's not a trap
+ */
+
+/**
  * Game screen for a specific difficulty level
  */
 @OptIn(ExperimentalMaterial3Api::class)

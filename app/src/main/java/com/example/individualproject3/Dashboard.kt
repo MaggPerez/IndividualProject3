@@ -40,6 +40,13 @@ import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFactory
 
+/**
+ * UI/UX Improvements
+ *
+ * todo: fix link with your parents message styling where it shows a weird gray rectangle around the text
+ * todo: for the player icon, make it the robot mascot instead
+ */
+
 @Composable
 fun DashboardScreen(
     navController: NavController,

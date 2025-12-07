@@ -14,6 +14,8 @@ import com.example.individualproject3.datamodels.GameSession
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+//todo fix game point system where a user doesn't get full points for completing a puzzle first try. Make sure the game point system works as intended.
+
 /**
  * Direction enum for robot movement
  */
