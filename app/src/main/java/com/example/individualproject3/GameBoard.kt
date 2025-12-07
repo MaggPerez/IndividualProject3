@@ -80,11 +80,26 @@ fun GameBoard(
         ) {
             // Key counter card (for Hard difficulty)
             if (puzzle.keys.isNotEmpty()) {
-                KeyCounterCard(
-                    keysCollected = keysCollected,
-                    totalKeys = puzzle.keys.size,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .height(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    KeyCounterCard(
+                        keysCollected = keysCollected,
+                        totalKeys = puzzle.keys.size,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    )
+                    TrapWarningCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    )
+                }
             }
 
             // Game board grid
@@ -832,15 +847,14 @@ fun KeyCounterCard(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
             .shadow(4.dp, RoundedCornerShape(12.dp)),
         colors = CardDefaults.cardColors(containerColor = LightPurple),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxSize()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -848,13 +862,13 @@ fun KeyCounterCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Collect All Keys!",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextOnColor
                 )
                 Text(
-                    text = "Required to complete the puzzle",
-                    fontSize = 12.sp,
+                    text = "Required to complete",
+                    fontSize = 11.sp,
                     color = TextOnColor.copy(alpha = 0.9f)
                 )
             }
@@ -862,21 +876,61 @@ fun KeyCounterCard(
             // Key counter
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Key,
                     contentDescription = "Keys",
                     tint = TextOnColor,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Text(
-                    text = "$keysCollected / $totalKeys",
-                    fontSize = 20.sp,
+                    text = "$keysCollected/$totalKeys",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = TextOnColor
                 )
             }
+        }
+    }
+}
+
+/**
+ * Trap warning card
+ */
+@Composable
+fun TrapWarningCard(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .shadow(4.dp, RoundedCornerShape(12.dp)),
+        colors = CardDefaults.cardColors(containerColor = ErrorRed),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+        ) {
+            Text(
+                text = "Be careful collecting the keys as they will activate the traps.",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 14.sp,
+                color = TextOnColor,
+                modifier = Modifier
+                    .padding(end = 24.dp)
+                    .align(Alignment.CenterStart)
+            )
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = "Warning",
+                tint = TextOnColor,
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(Alignment.TopEnd)
+            )
         }
     }
 }
