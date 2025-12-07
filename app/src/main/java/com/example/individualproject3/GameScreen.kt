@@ -635,11 +635,79 @@ fun getHardPuzzles(): List<PuzzleConfig> {
 }
 
 /**
- * Very Hard level puzzles (Level 4) - Placeholder
+ * Very Hard level puzzles (Level 4) - Ultimate challenge with keys and traps
  */
 fun getVeryHardPuzzles(): List<PuzzleConfig> {
-    // TODO: Implement very hard puzzles
-    return getEasyPuzzles() // Temporary
+    return listOf(
+        // Puzzle 1: "The Gauntlet" - Navigate through multiple trap zones (3 keys, 4 traps)
+        PuzzleConfig(
+            puzzleId = 10,
+            level = 4,
+            gameNumber = 1,
+            gridSize = 8,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(7, 7),
+            keys = listOf(Position(1, 6), Position(3, 5), Position(5, 2)), // 3 keys strategically placed
+            traps = listOf(Position(2, 3), Position(4, 2), Position(5, 6), Position(6, 5)), // 4 traps blocking key routes
+            maxCommands = 28
+        ),
+
+        // Puzzle 2: "The Maze Runner" - Complex maze with maximum keys (4 keys, 5 traps)
+        PuzzleConfig(
+            puzzleId = 11,
+            level = 4,
+            gameNumber = 2,
+            gridSize = 8,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(7, 7),
+            keys = listOf(Position(1, 5), Position(2, 7), Position(4, 6), Position(6, 3)), // 4 keys requiring extensive navigation
+            traps = listOf(Position(1, 1), Position(3, 5), Position(4, 2), Position(5, 5), Position(6, 6)), // 5 traps creating danger zones
+            maxCommands = 32
+        ),
+
+        // Puzzle 3: "The Ultimate Challenge" - Maximum difficulty (4 keys, 6 traps)
+        PuzzleConfig(
+            puzzleId = 12,
+            level = 4,
+            gameNumber = 3,
+            gridSize = 8,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(7, 7),
+            keys = listOf(Position(1, 5), Position(2, 2), Position(4, 5), Position(6, 6)), // 4 keys requiring perfect planning
+            traps = listOf(Position(1, 3), Position(3, 6), Position(4, 1), Position(5, 4), Position(6, 1), Position(7, 5)), // 6 traps creating ultimate challenge
+            maxCommands = 36
+        )
+    )
 }
 
 @Preview(showBackground = true)
