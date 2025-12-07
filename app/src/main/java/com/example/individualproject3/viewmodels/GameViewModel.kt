@@ -49,7 +49,8 @@ data class PuzzleConfig(
     val board: List<List<CellType>>,
     val startPosition: Position,
     val goalPosition: Position,
-    val maxCommands: Int = 10
+    val maxCommands: Int = 10,
+    val keys: List<Position> = emptyList() // Collectible key positions for Hard difficulty
 )
 
 /**
@@ -83,6 +84,8 @@ class GameViewModel(
         private const val KEY_GAME_STATE = "game_state"
         private const val KEY_ATTEMPTS = "attempts"
         private const val KEY_SCORE = "score"
+        private const val KEY_KEYS_COLLECTED = "keys_collected"
+        private const val KEY_REMAINING_KEYS = "remaining_keys"
     }
 
     // Current puzzle configuration
@@ -126,6 +129,14 @@ class GameViewModel(
     var score by mutableStateOf(savedStateHandle.get<Int>(KEY_SCORE) ?: 0)
         private set
 
+    // Keys collected (for Hard difficulty)
+    var keysCollected by mutableStateOf(savedStateHandle.get<Int>(KEY_KEYS_COLLECTED) ?: 0)
+        private set
+
+    // Remaining key positions (for Hard difficulty)
+    var remainingKeys by mutableStateOf<List<Position>>(emptyList())
+        private set
+
     /**
      * Get saved puzzle ID for restoration
      */
@@ -151,6 +162,8 @@ class GameViewModel(
             gameState = GameState.Idle
             attempts = 0
             score = 0
+            keysCollected = 0
+            remainingKeys = puzzle.keys.toList()
 
             // Save puzzle info to state
             savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
@@ -162,6 +175,7 @@ class GameViewModel(
             savedStateHandle[KEY_GAME_STATE] = "Idle"
             savedStateHandle[KEY_ATTEMPTS] = 0
             savedStateHandle[KEY_SCORE] = 0
+            savedStateHandle[KEY_KEYS_COLLECTED] = 0
         } else {
             // Just update puzzle reference, keep existing state
             savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
@@ -236,17 +250,32 @@ class GameViewModel(
                     savedStateHandle[KEY_ROBOT_ROW] = currentPosition.row
                     savedStateHandle[KEY_ROBOT_COL] = currentPosition.col
 
+                    // Check if robot stepped on a key
+                    if (currentPosition in remainingKeys) {
+                        remainingKeys = remainingKeys.filter { it != currentPosition }
+                        keysCollected++
+                        savedStateHandle[KEY_KEYS_COLLECTED] = keysCollected
+                    }
+
                     // Check if goal is reached
                     if (currentPosition == puzzle.goalPosition) {
-                        gameState = GameState.Success
+                        // For Hard difficulty, check if all keys are collected
+                        val allKeysCollected = puzzle.keys.isEmpty() || keysCollected == puzzle.keys.size
 
-                        // Save success state
-                        savedStateHandle[KEY_GAME_STATE] = "Success"
-                        calculateScore(puzzle)
-                        savedStateHandle[KEY_SCORE] = score
-                        saveGameSession(puzzle, success = true)
-                        robotState = RobotState(position = currentPosition, isActive = false)
-                        return@launch
+                        if (allKeysCollected) {
+                            gameState = GameState.Success
+
+                            // Save success state
+                            savedStateHandle[KEY_GAME_STATE] = "Success"
+                            calculateScore(puzzle)
+                            savedStateHandle[KEY_SCORE] = score
+                            saveGameSession(puzzle, success = true)
+                            robotState = RobotState(position = currentPosition, isActive = false)
+                            return@launch
+                        } else {
+                            // Reached goal but haven't collected all keys - continue execution
+                            // Player needs to collect remaining keys first
+                        }
                     }
                 } else {
                     // Hit a wall or invalid position
@@ -350,11 +379,14 @@ class GameViewModel(
             robotState = RobotState(position = puzzle.startPosition)
             commandQueue = emptyList()
             gameState = GameState.Idle
+            keysCollected = 0
+            remainingKeys = puzzle.keys.toList()
 
             savedStateHandle[KEY_ROBOT_ROW] = puzzle.startPosition.row
             savedStateHandle[KEY_ROBOT_COL] = puzzle.startPosition.col
             savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
             savedStateHandle[KEY_GAME_STATE] = "Idle"
+            savedStateHandle[KEY_KEYS_COLLECTED] = 0
         }
     }
 
@@ -367,10 +399,13 @@ class GameViewModel(
         gameState = GameState.Idle
         attempts = 0
         score = 0
+        keysCollected = 0
+        remainingKeys = emptyList()
 
         savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
         savedStateHandle[KEY_GAME_STATE] = "Idle"
         savedStateHandle[KEY_ATTEMPTS] = 0
         savedStateHandle[KEY_SCORE] = 0
+        savedStateHandle[KEY_KEYS_COLLECTED] = 0
     }
 }

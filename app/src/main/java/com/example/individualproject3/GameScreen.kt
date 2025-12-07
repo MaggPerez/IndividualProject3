@@ -142,6 +142,8 @@ fun GameScreen(
                         robotState = viewModel.robotState,
                         commandQueue = viewModel.commandQueue,
                         gameState = viewModel.gameState,
+                        keysCollected = viewModel.keysCollected,
+                        remainingKeys = viewModel.remainingKeys,
                         onAddCommand = { direction -> viewModel.addCommand(direction) },
                         onRemoveLastCommand = { viewModel.removeLastCommand() },
                         onClearCommands = { viewModel.clearCommands() },
@@ -559,11 +561,73 @@ fun getNormalPuzzles(): List<PuzzleConfig> {
 }
 
 /**
- * Hard level puzzles (Level 3) - Placeholder
+ * Hard level puzzles (Level 3) - With key collection mechanics
  */
 fun getHardPuzzles(): List<PuzzleConfig> {
-    // TODO: Implement hard puzzles
-    return getEasyPuzzles() // Temporary
+    return listOf(
+        // Puzzle 1: "The First Key" - Introduction to key mechanics (1 key)
+        PuzzleConfig(
+            puzzleId = 7,
+            level = 3,
+            gameNumber = 1,
+            gridSize = 7,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(6, 6),
+            keys = listOf(Position(3, 2)), // 1 key to collect
+            maxCommands = 18
+        ),
+
+        // Puzzle 2: "The Twin Keys" - Collect 2 keys before reaching goal
+        PuzzleConfig(
+            puzzleId = 8,
+            level = 3,
+            gameNumber = 2,
+            gridSize = 7,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(6, 6),
+            keys = listOf(Position(2, 4), Position(4, 5)), // 2 keys to collect
+            maxCommands = 20
+        ),
+
+        // Puzzle 3: "The Triple Challenge" - Collect all 3 keys strategically placed
+        PuzzleConfig(
+            puzzleId = 9,
+            level = 3,
+            gameNumber = 3,
+            gridSize = 7,
+            board = listOf(
+                listOf(CellType.START, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
+                listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
+            ),
+            startPosition = Position(0, 0),
+            goalPosition = Position(6, 6),
+            keys = listOf(Position(1, 4), Position(2, 6), Position(4, 1)), // 3 keys to collect
+            maxCommands = 26
+        )
+    )
 }
 
 /**

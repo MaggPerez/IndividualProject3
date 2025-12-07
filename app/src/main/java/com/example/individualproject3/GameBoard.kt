@@ -57,6 +57,8 @@ fun GameBoard(
     robotState: RobotState?,
     commandQueue: List<Direction>,
     gameState: GameState,
+    keysCollected: Int = 0,
+    remainingKeys: List<Position> = emptyList(),
     onAddCommand: (Direction) -> Unit,
     onRemoveLastCommand: () -> Unit,
     onClearCommands: () -> Unit,
@@ -75,10 +77,20 @@ fun GameBoard(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Key counter card (for Hard difficulty)
+            if (puzzle.keys.isNotEmpty()) {
+                KeyCounterCard(
+                    keysCollected = keysCollected,
+                    totalKeys = puzzle.keys.size,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
             // Game board grid
             GameGrid(
                 puzzle = puzzle,
                 robotState = robotState,
+                remainingKeys = remainingKeys,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -155,6 +167,7 @@ fun GameBoard(
 fun GameGrid(
     puzzle: PuzzleConfig,
     robotState: RobotState?,
+    remainingKeys: List<Position> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -179,12 +192,14 @@ fun GameGrid(
                         val position = Position(row, col)
                         val cellType = puzzle.board[row][col]
                         val hasRobot = robotState?.position == position
+                        val hasKey = position in remainingKeys
 
                         GameCell(
                             cellType = cellType,
                             hasRobot = hasRobot,
+                            hasKey = hasKey,
                             isRobotActive = robotState?.isActive ?: false,
-                            modifier = Modifier.size(60.dp)
+                            modifier = Modifier.size(if (puzzle.gridSize > 6) 50.dp else 60.dp)
                         )
                     }
                 }
@@ -200,6 +215,7 @@ fun GameGrid(
 fun GameCell(
     cellType: CellType,
     hasRobot: Boolean,
+    hasKey: Boolean = false,
     isRobotActive: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -244,6 +260,15 @@ fun GameCell(
                     modifier = Modifier
                         .size(40.dp)
                         .scale(if (isRobotActive) robotScale else 1f)
+                )
+            }
+            hasKey -> {
+                // Purple key icon for Hard difficulty
+                Icon(
+                    imageVector = Icons.Default.Key,
+                    contentDescription = "Key",
+                    tint = LightPurple,
+                    modifier = Modifier.size(30.dp)
                 )
             }
             cellType == CellType.START -> {
@@ -778,5 +803,65 @@ fun GameStateMessage(gameState: GameState) {
             }
         }
         else -> { /* No message for Idle or Running states */ }
+    }
+}
+
+/**
+ * Key counter card for Hard difficulty
+ */
+@Composable
+fun KeyCounterCard(
+    keysCollected: Int,
+    totalKeys: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(4.dp, RoundedCornerShape(12.dp)),
+        colors = CardDefaults.cardColors(containerColor = LightPurple),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Info text
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Collect All Keys!",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextOnColor
+                )
+                Text(
+                    text = "Required to complete the puzzle",
+                    fontSize = 12.sp,
+                    color = TextOnColor.copy(alpha = 0.9f)
+                )
+            }
+
+            // Key counter
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Key,
+                    contentDescription = "Keys",
+                    tint = TextOnColor,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "$keysCollected / $totalKeys",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextOnColor
+                )
+            }
+        }
     }
 }
