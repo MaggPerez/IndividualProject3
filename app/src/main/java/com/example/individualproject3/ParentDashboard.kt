@@ -1,6 +1,7 @@
 package com.example.individualproject3
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -249,7 +250,10 @@ fun ParentDashboardScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .shadow(2.dp, RoundedCornerShape(12.dp)),
+                                .shadow(2.dp, RoundedCornerShape(12.dp))
+                                .clickable {
+                                    navController.navigate("child_performance/${kid.username}/${kid.id}")
+                                },
                             colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -272,18 +276,24 @@ fun ParentDashboardScreen(
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(16.dp))
-                                Column {
+                                Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = kid.username,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp
                                     )
                                     Text(
-                                        text = "Level: 1 (Coming Soon)", // Placeholder
+                                        text = "Tap to view performance",
                                         fontSize = 14.sp,
                                         color = TextSecondary
                                     )
                                 }
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "View Details",
+                                    tint = BrightBlue,
+                                    modifier = Modifier.size(24.dp)
+                                )
                             }
                         }
                     }

@@ -55,6 +55,23 @@ fun Navigation(){
         }
 
         composable(
+            route = "child_performance/{childUsername}/{childId}",
+            arguments = listOf(
+                navArgument("childUsername") { type = NavType.StringType },
+                navArgument("childId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val childUsername = backStackEntry.arguments?.getString("childUsername") ?: ""
+            val childId = backStackEntry.arguments?.getInt("childId") ?: 0
+            ChildPerformanceDetailScreen(
+                navController = navController,
+                childUsername = childUsername,
+                childId = childId,
+                viewModel = sharedViewModel
+            )
+        }
+
+        composable(
             route = "level_screen/{level}",
             arguments = listOf(navArgument("level") { type = NavType.IntType })
         ) { backStackEntry ->
