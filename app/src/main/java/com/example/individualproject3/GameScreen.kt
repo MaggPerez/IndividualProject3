@@ -403,61 +403,20 @@ fun CompletionCard(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Navigation buttons
-            if (currentLevel < 4) {
-                // Show both buttons for levels 1-3
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // Back to Dashboard button
-                    Button(
-                        onClick = { navController.navigate("dashboard_screen") },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = TextSecondary),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Dashboard",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Dashboard", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-
-                    // Next Level button
-                    Button(
-                        onClick = { navController.navigate("level_screen/${currentLevel + 1}") },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = levelColor),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Next Level", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Next Level",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            } else {
-                // Show only Dashboard button for level 4 (Very Hard)
-                Button(
-                    onClick = { navController.navigate("dashboard_screen") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = levelColor),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Dashboard",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Back to Dashboard", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                }
+            // Back to Dashboard button (all levels)
+            Button(
+                onClick = { navController.navigate("dashboard_screen")  },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = levelColor),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "Dashboard",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Back to Dashboard", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

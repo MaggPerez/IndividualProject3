@@ -323,7 +323,7 @@ class GameViewModel(
 
                             // Save success state
                             savedStateHandle[KEY_GAME_STATE] = "Success"
-                            calculateScore(puzzle)
+                            calculateScore()
                             savedStateHandle[KEY_SCORE] = score
                             saveGameSession(puzzle, success = true)
                             robotState = RobotState(position = currentPosition, isActive = false)
@@ -380,32 +380,18 @@ class GameViewModel(
     /**
      * Calculate score based on efficiency
      */
-    private fun calculateScore(puzzle: PuzzleConfig) {
-        // Base score
+    private fun calculateScore() {
+        // Give full points if completed on first try
+        if (attempts == 1) {
+            score = 100
+            return
+        }
+
+        // Penalize for multiple attempts
         var baseScore = 100
-
-        // Deduct points for extra commands
-        val optimalMoves = puzzle.optimalMoves ?: calculateOptimalMoves(puzzle)
-        val extraMoves = commandQueue.size - optimalMoves
-        if (extraMoves > 0) {
-            baseScore -= (extraMoves * 10)
-        }
-
-        // Deduct points for extra attempts
-        if (attempts > 1) {
-            baseScore -= ((attempts - 1) * 20)
-        }
+        baseScore -= ((attempts - 1) * 20)
 
         score = baseScore.coerceAtLeast(10) // Minimum score of 10
-    }
-
-    /**
-     * Calculate optimal number of moves (Manhattan distance fallback)
-     */
-    private fun calculateOptimalMoves(puzzle: PuzzleConfig): Int {
-        val start = puzzle.startPosition
-        val goal = puzzle.goalPosition
-        return kotlin.math.abs(goal.row - start.row) + kotlin.math.abs(goal.col - start.col)
     }
 
     /**
