@@ -14,8 +14,6 @@ import com.example.individualproject3.datamodels.GameSession
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-//todo fix game point system where a user doesn't get full points for completing a puzzle first try. Make sure the game point system works as intended.
-
 /**
  * Direction enum for robot movement
  */
@@ -56,7 +54,8 @@ data class PuzzleConfig(
     val goalPosition: Position,
     val maxCommands: Int = 10,
     val keys: List<Position> = emptyList(), // Collectible key positions for Hard difficulty
-    val traps: List<Position> = emptyList() // Trap positions that activate when a key is collected
+    val traps: List<Position> = emptyList(), // Trap positions that activate when a key is collected
+    val optimalMoves: Int? = null // Actual optimal number of moves (accounts for walls), defaults to Manhattan distance if null
 )
 
 /**
@@ -386,7 +385,7 @@ class GameViewModel(
         var baseScore = 100
 
         // Deduct points for extra commands
-        val optimalMoves = calculateOptimalMoves(puzzle)
+        val optimalMoves = puzzle.optimalMoves ?: calculateOptimalMoves(puzzle)
         val extraMoves = commandQueue.size - optimalMoves
         if (extraMoves > 0) {
             baseScore -= (extraMoves * 10)
@@ -401,7 +400,7 @@ class GameViewModel(
     }
 
     /**
-     * Calculate optimal number of moves (Manhattan distance)
+     * Calculate optimal number of moves (Manhattan distance fallback)
      */
     private fun calculateOptimalMoves(puzzle: PuzzleConfig): Int {
         val start = puzzle.startPosition

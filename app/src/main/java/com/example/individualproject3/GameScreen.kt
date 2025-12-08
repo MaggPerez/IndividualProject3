@@ -32,14 +32,6 @@ import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.*
 
 /**
- * UI/UX Fixes
- * todo: fix the three buttons at the bottom so that they are equal sizes and the texts are not wrapped, decrease font size if needed
- * todo: when the player completes all puzzles in a level, add two buttons in the CompletionCard composable where one button takes them back to the dashboard and the other button takes them to the next level (easy -> normal -> hard -> very hard). If user completes very hard level, both buttons, show one button that takes them back to the dashboard.
- * todo: for hard and very hard, fix the key counter card and warning card so that the texts are not awkwardly wrapped/spaced.
- * todo: fix puzzle 2 in very hard level where one of the walls is highlighted red even though it's not a trap
- */
-
-/**
  * Game screen for a specific difficulty level
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +56,7 @@ fun GameScreen(
     // Get puzzles for this level
     val puzzles = remember { getPuzzlesForLevel(level) }
     var currentPuzzleIndex by rememberSaveable { mutableStateOf(0) }
-    
+
     // Start background music
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -199,7 +191,12 @@ fun GameScreen(
                 // Completion message (all puzzles completed)
                 if (viewModel.gameState is GameState.Success && currentPuzzleIndex == puzzles.size - 1) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    CompletionCard(levelTitle = levelTitle, levelColor = levelColor)
+                    CompletionCard(
+                        levelTitle = levelTitle,
+                        levelColor = levelColor,
+                        currentLevel = level,
+                        navController = navController
+                    )
                 }
             }
         }
@@ -351,7 +348,12 @@ fun ScoreDisplay(score: Int, attempts: Int) {
  * Completion card shown when all puzzles are completed
  */
 @Composable
-fun CompletionCard(levelTitle: String, levelColor: Color) {
+fun CompletionCard(
+    levelTitle: String,
+    levelColor: Color,
+    currentLevel: Int,
+    navController: NavController
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -399,14 +401,64 @@ fun CompletionCard(levelTitle: String, levelColor: Color) {
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "Ready for the next challenge?",
-                fontSize = 14.sp,
-                color = TextPrimary,
-                textAlign = TextAlign.Center
-            )
+            // Navigation buttons
+            if (currentLevel < 4) {
+                // Show both buttons for levels 1-3
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Back to Dashboard button
+                    Button(
+                        onClick = { navController.navigate("dashboard_screen") },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = TextSecondary),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Dashboard",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Dashboard", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    // Next Level button
+                    Button(
+                        onClick = { navController.navigate("level_screen/${currentLevel + 1}") },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = levelColor),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Next Level", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "Next Level",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            } else {
+                // Show only Dashboard button for level 4 (Very Hard)
+                Button(
+                    onClick = { navController.navigate("dashboard_screen") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = levelColor),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Dashboard",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Back to Dashboard", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 }
@@ -695,7 +747,7 @@ fun getVeryHardPuzzles(): List<PuzzleConfig> {
             startPosition = Position(0, 0),
             goalPosition = Position(7, 7),
             keys = listOf(Position(1, 5), Position(2, 7), Position(4, 6), Position(6, 3)), // 4 keys requiring extensive navigation
-            traps = listOf(Position(1, 1), Position(3, 5), Position(4, 2), Position(5, 5), Position(6, 6)), // 5 traps creating danger zones
+            traps = listOf(Position(1, 1), Position(3, 5), Position(4, 2), Position(5, 4), Position(6, 6)), // 5 traps creating danger zones (fixed: moved trap from wall at 5,5 to empty cell at 5,4)
             maxCommands = 32
         ),
 

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -39,14 +40,7 @@ import com.example.individualproject3.datamodels.UserRepository
 import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFactory
-
-/**
- * UI/UX Improvements
- *
- * todo: fix link with your parents message styling where it shows a weird gray rectangle around the text
- * todo: for the player icon, make it the robot mascot instead
- */
-
+//todo: fix link with your parents message styling where it shows a weird gray rectangle around the text
 @Composable
 fun DashboardScreen(
     navController: NavController,
@@ -301,7 +295,11 @@ fun DashboardScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .shadow(4.dp, RoundedCornerShape(16.dp))
-                    .clickable(enabled = linkedParentName == null) {
+                    .clickable(
+                        enabled = linkedParentName == null,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
                         if (linkedParentName == null) {
                             viewModel.showLinkParentModal()
                         }
@@ -325,7 +323,7 @@ fun DashboardScreen(
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     if (linkedParentName == null) {
                         Text(
                             text = "You're not linked to a parent. Get linked now!",
@@ -376,14 +374,15 @@ fun ProfileHeader(username: String) {
                             colors = listOf(BrightBlue, LightPurple)
                         ),
                         shape = CircleShape
-                    ),
+                    )
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
+                Image(
+                    painter = painterResource(id = R.drawable.robot),
                     contentDescription = "Player Avatar",
-                    tint = TextOnColor,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
                 )
             }
 

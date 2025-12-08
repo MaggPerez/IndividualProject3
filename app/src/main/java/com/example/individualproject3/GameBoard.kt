@@ -708,15 +708,16 @@ fun ControlButtons(
                 containerColor = BrightGreen,
                 disabledContainerColor = Color.Gray
             ),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = "Run",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("Run", fontWeight = FontWeight.Bold)
+            Text("Run", fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
         }
 
         // Clear button
@@ -730,15 +731,16 @@ fun ControlButtons(
                 containerColor = PlayfulOrange,
                 disabledContainerColor = Color.Gray
             ),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Clear,
                 contentDescription = "Clear",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("Clear", fontWeight = FontWeight.Bold)
+            Text("Clear", fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
         }
 
         // Reset button
@@ -751,15 +753,16 @@ fun ControlButtons(
                 containerColor = ErrorRed,
                 disabledContainerColor = Color.Gray
             ),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Reset",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("Reset", fontWeight = FontWeight.Bold)
+            Text("Reset", fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
         }
     }
 }
@@ -856,22 +859,26 @@ fun KeyCounterCard(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Info text
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Collect All Keys!",
-                    fontSize = 14.sp,
+                    text = "Collect Keys!",
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextOnColor
+                    color = TextOnColor,
+                    lineHeight = 14.sp,
+                    maxLines = 1
                 )
                 Text(
-                    text = "Required to complete",
-                    fontSize = 11.sp,
-                    color = TextOnColor.copy(alpha = 0.9f)
+                    text = "Required",
+                    fontSize = 10.sp,
+                    color = TextOnColor.copy(alpha = 0.9f),
+                    lineHeight = 12.sp,
+                    maxLines = 1
                 )
             }
 
@@ -884,11 +891,11 @@ fun KeyCounterCard(
                     imageVector = Icons.Default.Key,
                     contentDescription = "Keys",
                     tint = TextOnColor,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(18.dp)
                 )
                 Text(
                     text = "$keysCollected/$totalKeys",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = TextOnColor
                 )
@@ -913,16 +920,16 @@ fun TrapWarningCard(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .padding(10.dp)
         ) {
             Text(
-                text = "Be careful collecting the keys as they will activate the traps.",
-                fontSize = 12.sp,
+                text = "Keys activate traps!",
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                lineHeight = 14.sp,
+                lineHeight = 13.sp,
                 color = TextOnColor,
                 modifier = Modifier
-                    .padding(end = 24.dp)
+                    .padding(end = 22.dp)
                     .align(Alignment.CenterStart)
             )
             Icon(
@@ -930,8 +937,8 @@ fun TrapWarningCard(
                 contentDescription = "Warning",
                 tint = TextOnColor,
                 modifier = Modifier
-                    .size(20.dp)
-                    .align(Alignment.TopEnd)
+                    .size(18.dp)
+                    .align(Alignment.CenterEnd)
             )
         }
     }
