@@ -714,7 +714,7 @@ fun getVeryHardPuzzles(): List<PuzzleConfig> {
             startPosition = Position(0, 0),
             goalPosition = Position(7, 7),
             keys = listOf(Position(1, 5), Position(2, 7), Position(4, 6), Position(6, 3)), // 4 keys requiring extensive navigation
-            traps = listOf(Position(1, 1), Position(3, 5), Position(4, 2), Position(5, 4), Position(6, 6)), // 5 traps creating danger zones (fixed: moved trap from wall at 5,5 to empty cell at 5,4)
+            traps = listOf(Position(1, 1), Position(3, 5), Position(4, 2), Position(6, 2), Position(6, 6)),
             maxCommands = 32
         ),
 
