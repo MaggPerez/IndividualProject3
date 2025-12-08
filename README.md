@@ -1,7 +1,8 @@
 # PuzzleBot
 
+- An android puzzle game where the user controls a robot to achieve its goals, collecting necessary keys and avoiding traps.
+<img width="3840" height="3072" alt="PuzzleBot Github Image" src="https://github.com/user-attachments/assets/0e959b90-aba4-4421-96fa-db1b49e38c05" />
 
-An Android puzzle game where the user helps direct a robot to its goals.
 
 ## Overview
 
