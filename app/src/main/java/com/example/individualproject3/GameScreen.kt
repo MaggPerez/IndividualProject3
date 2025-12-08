@@ -100,7 +100,10 @@ fun GameScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        viewModel.stopMusic()
+                        navController.popBackStack()
+                    }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -195,7 +198,11 @@ fun GameScreen(
                         levelTitle = levelTitle,
                         levelColor = levelColor,
                         currentLevel = level,
-                        navController = navController
+                        navController = navController,
+                        onNavigateToDashboard = {
+                            viewModel.stopMusic()
+                            navController.navigate("dashboard_screen")
+                        }
                     )
                 }
             }
@@ -352,7 +359,8 @@ fun CompletionCard(
     levelTitle: String,
     levelColor: Color,
     currentLevel: Int,
-    navController: NavController
+    navController: NavController,
+    onNavigateToDashboard: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -405,7 +413,7 @@ fun CompletionCard(
 
             // Back to Dashboard button (all levels)
             Button(
-                onClick = { navController.navigate("dashboard_screen")  },
+                onClick = onNavigateToDashboard,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = levelColor),
                 shape = RoundedCornerShape(12.dp)
