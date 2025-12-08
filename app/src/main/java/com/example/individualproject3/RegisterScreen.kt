@@ -63,6 +63,9 @@ import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFacto
 import com.example.individualproject3.viewmodels.UiEvent
 import kotlinx.coroutines.flow.collectLatest
 
+/**
+ * Composable function for the Login Screen
+ */
 @Composable
 fun RegisterScreen(
     navController: NavHostController,

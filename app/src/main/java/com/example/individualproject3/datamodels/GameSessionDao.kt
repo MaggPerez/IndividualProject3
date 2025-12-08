@@ -8,6 +8,9 @@ import androidx.room.Query
 @Dao
 interface GameSessionDao {
 
+    /**
+     * Inserts a new game session into the database.
+     */
     @Insert
     suspend fun insertSession(session: GameSession)
 

@@ -10,9 +10,13 @@ class UserRepository(
     private val context: Context
 ) {
 
+    //initializing log manager
     private val logManager = LogManager(context)
 
 
+    /**
+     * Inserts a new user into the database.
+     */
     suspend fun insertUser(user: UserModel) {
         userDao.insert(user)
 
@@ -24,6 +28,9 @@ class UserRepository(
     }
 
 
+    /**
+     * Registers a new user.
+     */
     suspend fun registerUser(user: UserModel) {
         userDao.insert(user)
 
@@ -35,6 +42,9 @@ class UserRepository(
     }
 
 
+    /**
+     * Retrieves a user by their username.
+     */
     suspend fun getUserByUsername(username: String): UserModel? {
         val user = userDao.getUserByUsername(username)
 
@@ -46,13 +56,23 @@ class UserRepository(
         return user
     }
 
+
+    /**
+     * Retrieves a user by their ID.
+     */
     suspend fun getUserById(id: Int): UserModel {
         return userDao.getUserById(id)
     }
 
+
+    /**
+     * Retrieves all kids from the database.
+     */
     suspend fun getAllKids(): List<UserModel> {
         return userDao.getAllKids()
     }
+
+
 
     // Generate a unique 6-character invite code for a parent
     fun generateInviteCode(): String {

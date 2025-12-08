@@ -30,6 +30,9 @@ val Typography = Typography(
         letterSpacing = 1.sp
     ),
 
+
+
+
     //headline styles - Page headers
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -52,6 +55,8 @@ val Typography = Typography(
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
+
+
 
     //title styles - Section headers
     titleLarge = TextStyle(
@@ -76,6 +81,8 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     ),
 
+
+
     //body styles - Regular content
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -98,6 +105,8 @@ val Typography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
+
+
 
     //label styles - Buttons and labels
     labelLarge = TextStyle(

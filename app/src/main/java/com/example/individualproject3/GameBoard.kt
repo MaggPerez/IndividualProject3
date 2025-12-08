@@ -246,19 +246,31 @@ fun GameCell(
 ) {
     // Determine background color based on trap state
     val backgroundColor = when {
-        isTrap && trapActivated -> ErrorRed.copy(alpha = 0.8f) // Solid red when activated
-        isTrap && !trapActivated -> ErrorRed.copy(alpha = 0.2f) // Faint red when inactive
+
+        // Solid red when activated
+        isTrap && trapActivated -> ErrorRed.copy(alpha = 0.8f)
+
+        // Faint red when inactive
+        isTrap && !trapActivated -> ErrorRed.copy(alpha = 0.2f)
         cellType == CellType.EMPTY -> Color.White
         cellType == CellType.WALL -> Color.Gray
         cellType == CellType.START -> BrightGreen.copy(alpha = 0.3f)
         cellType == CellType.GOAL -> SunnyYellow.copy(alpha = 0.5f)
-        cellType == CellType.TRAP -> ErrorRed.copy(alpha = 0.2f) // Faint red for TRAP cell type (fallback)
+
+        // Faint red for TRAP cell type (fallback)
+        cellType == CellType.TRAP -> ErrorRed.copy(alpha = 0.2f)
         else -> Color.White
     }
 
+
+    // Determine border color
     val borderColor = when {
-        isTrap && trapActivated -> ErrorRed // Solid red border when activated
-        isTrap && !trapActivated -> ErrorRed.copy(alpha = 0.4f) // Faint red border when inactive
+
+        // Solid red border when activated
+        isTrap && trapActivated -> ErrorRed
+
+        // Faint red border when inactive
+        isTrap && !trapActivated -> ErrorRed.copy(alpha = 0.4f)
         cellType == CellType.START -> BrightGreen
         cellType == CellType.GOAL -> SunnyYellow
         else -> Color.LightGray
@@ -385,6 +397,8 @@ fun CommandQueueDisplay(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+
+            // Command chips or placeholder
             if (commands.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -563,9 +577,13 @@ fun DirectionButton(
     onDrag: (Offset) -> Unit = {},
     onDragEnd: () -> Unit = {}
 ) {
+
+    // Pressed state for animation
     var isPressed by remember { mutableStateOf(false) }
     var buttonPosition by remember { mutableStateOf(Offset.Zero) }
 
+
+    // Scale animation
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.9f else 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),

@@ -63,6 +63,10 @@ import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFacto
 import com.example.individualproject3.viewmodels.UiEvent
 import kotlinx.coroutines.flow.collectLatest
 
+
+/**
+ * Composable function for the Login Screen
+ */
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -81,7 +85,10 @@ fun LoginScreen(
     )
 ) {
 
+    //get current context
     val context = LocalContext.current
+
+
 
     //observe UI events from ViewModel
     LaunchedEffect(key1 = true) {

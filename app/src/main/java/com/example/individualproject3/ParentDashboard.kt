@@ -36,6 +36,11 @@ import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFactory
 
+
+
+/**
+ * Composable for the Parent Dashboard Screen
+ */
 @Composable
 fun ParentDashboardScreen(
     navController: NavController,
@@ -53,9 +58,14 @@ fun ParentDashboardScreen(
         )
     )
 ) {
+
+
+    // Observe state from ViewModel getting username, invite code, and linked kids
     val username = viewModel.loggedInUsername
     val inviteCode = viewModel.inviteCode
     val linkedKids = viewModel.linkedKids
+
+    // Clipboard manager for copying invite code
     val clipboardManager = LocalClipboardManager.current
     
     // Fetch data when screen loads
@@ -157,6 +167,8 @@ fun ParentDashboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+
+
             // Invite Code Section
             if (linkedKids.isEmpty()) {
                 Card(
@@ -220,7 +232,8 @@ fun ParentDashboardScreen(
                         }
                         
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
+                        // Copy Button
                         Button(
                             onClick = { 
                                 clipboardManager.setText(AnnotatedString(inviteCode))
@@ -233,7 +246,7 @@ fun ParentDashboardScreen(
                     }
                 }
             } else {
-                // Linked Kids List (Placeholder for now as per requirements to focus on prompt)
+                // Linked Kids List with Invite Code at Bottom
                 Text(
                     text = "Your Linked Children",
                     fontSize = 20.sp,

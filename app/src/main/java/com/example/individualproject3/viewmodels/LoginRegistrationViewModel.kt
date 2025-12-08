@@ -35,21 +35,29 @@ class LoginRegistrationViewModel(
     var passwordVisible by mutableStateOf(false)
         private set
 
+
+
     //store logged-in user's username for dashboard display
     var loggedInUsername by mutableStateOf("")
         private set
+
+
 
     //store logged-in user's ID for game sessions
     var loggedInUserId by mutableStateOf(0)
         private set
 
-    //parent dashboard specific state
+
+
+    // parent dashboard specific state
     var inviteCode by mutableStateOf("")
         private set
     var linkedKids by mutableStateOf<List<UserModel>>(emptyList())
         private set
 
-    //kid dashboard specific state
+
+
+    // kid dashboard specific state
     var linkedParentName by mutableStateOf<String?>(null)
         private set
     var isLinkParentModalVisible by mutableStateOf(false)
@@ -59,7 +67,9 @@ class LoginRegistrationViewModel(
     var linkParentError by mutableStateOf<String?>(null)
         private set
 
-    //registration
+
+
+    // registration
     var createFirstName by mutableStateOf("")
     var createLastName by mutableStateOf("")
     var createUsername by mutableStateOf("")
@@ -74,12 +84,16 @@ class LoginRegistrationViewModel(
     val uiEvent = _uiEvent.asSharedFlow()
 
 
+
+
     /**
      * function that handles user type (kid or parent)
      */
     fun onUserTypeSelected(selectedType: UserType) {
         userType = selectedType
     }
+
+
 
 
     fun onHandleLogin(): Unit {
@@ -91,6 +105,7 @@ class LoginRegistrationViewModel(
             return
         }
 
+        //authenticate user
         viewModelScope.launch {
             val user = userRepository.getUserByUsername(username)
             if(user == null || user.password != password) {
@@ -111,11 +126,19 @@ class LoginRegistrationViewModel(
         }
     }
 
+
+
+    /**
+     * function that toggles password visibility
+     */
     fun togglePasswordVisibility() {
         passwordVisible = !passwordVisible
     }
 
 
+    /**
+     * function that fetches parent dashboard data
+     */
     fun fetchParentDashboardData() {
         if (loggedInUsername.isBlank()) return
 
@@ -130,6 +153,11 @@ class LoginRegistrationViewModel(
         }
     }
 
+
+
+    /**
+     * function that fetches parent dashboard data
+     */
     fun fetchKidDashboardData() {
         if (loggedInUsername.isBlank()) return
 
@@ -146,27 +174,47 @@ class LoginRegistrationViewModel(
         }
     }
 
+
+    /**
+     * functions to handle linking parent modal
+     */
     fun showLinkParentModal() {
         isLinkParentModalVisible = true
         linkParentInviteCode = ""
         linkParentError = null
     }
 
+
+    /**
+     * functions to handle linking parent modal
+     */
     fun hideLinkParentModal() {
         isLinkParentModalVisible = false
     }
 
+
+    /**
+     * function to update invite code input
+     */
     fun updateLinkParentCode(code: String) {
         linkParentInviteCode = code
         if (linkParentError != null) linkParentError = null
     }
 
+
+
+    /**
+     * function that attempts to link child to parent using invite code
+     */
     fun attemptLinkParent() {
+
+        // Validate input
         if (linkParentInviteCode.isBlank()) {
             linkParentError = "Please enter a code"
             return
         }
 
+        // Proceed to link child to parent
         viewModelScope.launch {
             val user = userRepository.getUserByUsername(loggedInUsername)
             if (user != null) {
@@ -188,7 +236,7 @@ class LoginRegistrationViewModel(
      * function that handles registration
      */
     fun onHandleRegistration(): Boolean {
-        //logic for registration
+        //making sure the fields are not blank
         if(createFirstName.isBlank() && createLastName.isBlank() &&
             createUsername.isBlank() && createEmail.isBlank() &&
             createPassword.isBlank() && confirmPassword.isBlank()) {
@@ -198,6 +246,7 @@ class LoginRegistrationViewModel(
             return false
         }
 
+        //checking if passwords match
         if(createPassword != confirmPassword){
             viewModelScope.launch {
                 _uiEvent.emit(UiEvent.ShowToast("Passwords do not match"))
@@ -216,6 +265,7 @@ class LoginRegistrationViewModel(
         )
 
 
+        //registering user in the database
         viewModelScope.launch {
             userRepository.registerUser(newUser)
             _uiEvent.emit(UiEvent.ShowToast("Registration successful"))

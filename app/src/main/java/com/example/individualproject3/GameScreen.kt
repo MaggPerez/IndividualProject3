@@ -78,6 +78,7 @@ fun GameScreen(
         }
     }
 
+    // Current puzzle
     val currentPuzzle = viewModel.currentPuzzle
     val levelTitle = getLevelTitle(level)
     val levelColor = getLevelColor(level)
@@ -164,7 +165,7 @@ fun GameScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Next puzzle button (shown on success)
+                // Next puzzle button shown on success
                 if (viewModel.gameState is GameState.Success && currentPuzzleIndex < puzzles.size - 1) {
                     Button(
                         onClick = {
@@ -209,6 +210,8 @@ fun GameScreen(
         }
     }
 }
+
+
 
 /**
  * Puzzle selector with dots
@@ -260,6 +263,8 @@ fun PuzzleSelector(
     }
 }
 
+
+
 /**
  * Individual puzzle dot indicator
  */
@@ -294,6 +299,9 @@ fun PuzzleDot(
         }
     }
 }
+
+
+
 
 /**
  * Score display card
@@ -350,6 +358,9 @@ fun ScoreDisplay(score: Int, attempts: Int) {
         }
     }
 }
+
+
+
 
 /**
  * Completion card shown when all puzzles are completed
@@ -411,7 +422,7 @@ fun CompletionCard(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Back to Dashboard button (all levels)
+            // Back to Dashboard button for all levels
             Button(
                 onClick = onNavigateToDashboard,
                 modifier = Modifier.fillMaxWidth(),
@@ -429,6 +440,9 @@ fun CompletionCard(
         }
     }
 }
+
+
+
 
 /**
  * Get level title
@@ -487,6 +501,8 @@ fun getEasyPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY)
             ),
+
+            // Starting and goal positions and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(0, 4),
             maxCommands = 10
@@ -505,6 +521,8 @@ fun getEasyPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
             ),
+
+            // Starting and goal positions and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(4, 4),
             maxCommands = 10
@@ -523,6 +541,7 @@ fun getEasyPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
             ),
+            // Starting and goal positions and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(4, 4),
             maxCommands = 12
@@ -549,6 +568,8 @@ fun getNormalPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
             ),
+
+            // Starting and goal positions and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(5, 5),
             maxCommands = 14
@@ -568,6 +589,8 @@ fun getNormalPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
                 listOf(CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
             ),
+
+            // Starting and goal positions and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(5, 5),
             maxCommands = 13
@@ -587,6 +610,8 @@ fun getNormalPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY)
             ),
+
+            // Starting and goal positions and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(1, 5),
             maxCommands = 12
@@ -614,10 +639,12 @@ fun getHardPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.GOAL)
             ),
+
+            // Starting and goal positions, keys, and traps, and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(6, 6),
-            keys = listOf(Position(3, 2)), // 1 key to collect
-            traps = listOf(Position(4, 2)), // Trap blocks the direct path after collecting the key
+            keys = listOf(Position(3, 2)),
+            traps = listOf(Position(4, 2)),
             maxCommands = 18
         ),
 
@@ -636,6 +663,8 @@ fun getHardPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL),
                 listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
             ),
+
+            // Starting and goal positions, keys, and traps, and max commands
             startPosition = Position(0, 0),
             goalPosition = Position(6, 6),
             keys = listOf(Position(2, 4), Position(4, 5)), // 2 keys to collect
@@ -658,10 +687,18 @@ fun getHardPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.WALL, CellType.EMPTY),
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.GOAL)
             ),
+
+            // Starting and goal positions
             startPosition = Position(0, 0),
             goalPosition = Position(6, 6),
-            keys = listOf(Position(1, 4), Position(2, 6), Position(4, 1)), // 3 keys to collect
-            traps = listOf(Position(2, 1), Position(4, 6), Position(5, 4)), // Three strategic traps
+
+            // 3 keys to collect
+            keys = listOf(Position(1, 4), Position(2, 6), Position(4, 1)),
+
+            // Three strategic traps
+            traps = listOf(Position(2, 1), Position(4, 6), Position(5, 4)),
+
+            // Maximum commands allowed
             maxCommands = 26
         )
     )
@@ -688,10 +725,18 @@ fun getVeryHardPuzzles(): List<PuzzleConfig> {
                 listOf(CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY),
                 listOf(CellType.WALL, CellType.WALL, CellType.EMPTY, CellType.EMPTY, CellType.EMPTY, CellType.WALL, CellType.WALL, CellType.GOAL)
             ),
+
+            // Starting and goal positions
             startPosition = Position(0, 0),
             goalPosition = Position(7, 7),
-            keys = listOf(Position(1, 6), Position(3, 5), Position(5, 2)), // 3 keys strategically placed
-            traps = listOf(Position(2, 3), Position(4, 2), Position(1, 7), Position(6, 5)), // 4 traps blocking key routes
+
+            // 3 keys strategically placed
+            keys = listOf(Position(1, 6), Position(3, 5), Position(5, 2)),
+
+            // 4 traps blocking key routes
+            traps = listOf(Position(2, 3), Position(4, 2), Position(1, 7), Position(6, 5)),
+
+            // Maximum commands allowed
             maxCommands = 28
         ),
 
@@ -713,7 +758,11 @@ fun getVeryHardPuzzles(): List<PuzzleConfig> {
             ),
             startPosition = Position(0, 0),
             goalPosition = Position(7, 7),
-            keys = listOf(Position(1, 5), Position(2, 7), Position(4, 6), Position(6, 3)), // 4 keys requiring extensive navigation
+
+            // 4 keys requiring extensive navigation
+            keys = listOf(Position(1, 5), Position(2, 7), Position(4, 6), Position(6, 3)),
+
+            // 5 traps creating complex obstacles
             traps = listOf(Position(1, 1), Position(3, 5), Position(4, 2), Position(6, 2), Position(6, 6)),
             maxCommands = 32
         ),
@@ -736,8 +785,12 @@ fun getVeryHardPuzzles(): List<PuzzleConfig> {
             ),
             startPosition = Position(0, 0),
             goalPosition = Position(7, 7),
-            keys = listOf(Position(1, 5), Position(2, 2), Position(4, 5), Position(6, 6)), // 4 keys requiring perfect planning
-            traps = listOf(Position(1, 3), Position(3, 6), Position(4, 1), Position(5, 4), Position(6, 1), Position(7, 5)), // 6 traps creating ultimate challenge
+
+            // 4 keys requiring perfect planning
+            keys = listOf(Position(1, 5), Position(2, 2), Position(4, 5), Position(6, 6)),
+
+            // 6 traps creating ultimate challenge
+            traps = listOf(Position(1, 3), Position(3, 6), Position(4, 1), Position(5, 4), Position(6, 1), Position(7, 5)),
             maxCommands = 36
         )
     )

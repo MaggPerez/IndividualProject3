@@ -6,6 +6,10 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.individualproject3.UserModel
 
+
+/**
+ * Entity representing a game session played by a kid.
+ */
 @Entity(
     tableName = "game_sessions",
     foreignKeys = [
@@ -18,14 +22,26 @@ import com.example.individualproject3.UserModel
     ],
     indices = [Index(value = ["kidId"])]
 )
+
+/**
+ * Data model representing a game session played by a kid.
+ * @property sessionId Unique identifier for the game session (auto-generated).
+ * @property kidId Identifier of the kid who played the session.
+ * @property level Level of the game played.
+ * @property gameNumber Specific game number within the level.
+ * @property score Score achieved in the game session.
+ * @property success Boolean indicating if the game session was successful.
+ * @property attempts Number of attempts taken to complete the game session.
+ * @property timestamp Timestamp of when the game session was played.
+ */
 data class GameSession(
     @PrimaryKey(autoGenerate = true)
     var sessionId: Int = 0,
-    var kidId: Int = 0, //foreign key to UserModel
-    var level: Int = 0, //e.g., Level 1, 2, 3, 4
-    var gameNumber: Int = 0, //e.g., Game 1, 2, 3 within the level
+    var kidId: Int = 0,
+    var level: Int = 0,
+    var gameNumber: Int = 0,
     var score: Int = 0,
-    var success: Boolean = false, //To handle "success and reattempt"
+    var success: Boolean = false,
     var attempts: Int = 1,
-    var timestamp: Long = System.currentTimeMillis() // To track when it was played
+    var timestamp: Long = System.currentTimeMillis()
 )

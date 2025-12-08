@@ -41,16 +41,3 @@ class GameViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }
-
-//ViewModelFactories templates
-// class AnotherViewModelFactory(
-//     private val application: Application
-// ) : ViewModelProvider.Factory {
-//     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//         if (modelClass.isAssignableFrom(AnotherViewModel::class.java)) {
-//             @Suppress("UNCHECKED_CAST")
-//             return AnotherViewModel(application) as T
-//         }
-//         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-//     }
-// }

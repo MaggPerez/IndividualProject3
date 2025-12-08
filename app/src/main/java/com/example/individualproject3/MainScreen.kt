@@ -24,6 +24,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.individualproject3.ui.theme.*
 
+
+/**
+ * Main Screen Composable displaying the PuzzleBot mascot, title, tagline,
+ * and navigation buttons for login and registration.
+ */
 @Composable
 fun MainScreen(
     navController: NavHostController,

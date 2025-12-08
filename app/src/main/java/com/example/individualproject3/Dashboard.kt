@@ -41,6 +41,10 @@ import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFactory
 
+
+/**
+ * Dashboard screen for kid users to select game levels and link with parent accounts.
+ */
 @Composable
 fun DashboardScreen(
     navController: NavController,
@@ -81,12 +85,19 @@ fun DashboardScreen(
             },
             text = {
                 Column {
+
+                    //instructions to get invite code from parent
                     Text(
                         text = "Ask your parent for their 6-digit invite code found on their dashboard.",
                         fontSize = 14.sp,
                         color = TextSecondary
                     )
+
+
                     Spacer(modifier = Modifier.height(16.dp))
+
+
+                    //input field for invite code
                     OutlinedTextField(
                         value = viewModel.linkParentInviteCode,
                         onValueChange = { viewModel.updateLinkParentCode(it.uppercase()) },
@@ -103,6 +114,7 @@ fun DashboardScreen(
                     )
                 }
             },
+            //confirm and cancel buttons
             confirmButton = {
                 Button(
                     onClick = { viewModel.attemptLinkParent() },
@@ -122,6 +134,8 @@ fun DashboardScreen(
     }
 
     PuzzleBotAnimatedBackground(modifier = modifier) {
+
+        // Floating stars effect
         FloatingStars()
 
         Column(
@@ -173,10 +187,15 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+
+
             //welcome Header
             ProfileHeader(username = username)
 
+
+
             Spacer(modifier = Modifier.height(24.dp))
+
 
             //title
             PuzzleBotTitle(
@@ -186,6 +205,8 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+
+            //subtitle that tells user to pick a level
             PuzzleBotSubtitle(
                 text = "🎮 Pick a difficulty and start playing! 🚀",
                 color = BrightBlue
@@ -203,6 +224,8 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+
+                    // Easy Level Card
                     LevelCard(
                         level = 1,
                         title = "Easy",
@@ -212,6 +235,8 @@ fun DashboardScreen(
                         onClick = { navController.navigate("level_screen/1") }
                     )
 
+
+                    // Normal Level Card
                     LevelCard(
                         level = 2,
                         title = "Normal",
@@ -227,6 +252,8 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+
+                    // Hard Level Card
                     LevelCard(
                         level = 3,
                         title = "Hard",
@@ -236,6 +263,8 @@ fun DashboardScreen(
                         onClick = { navController.navigate("level_screen/3") }
                     )
 
+
+                    // Very Hard Level Card
                     LevelCard(
                         level = 4,
                         title = "Very Hard",
@@ -271,6 +300,8 @@ fun DashboardScreen(
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
+
+                    //encouragement text that the user is doing great
                     Text(
                         text = "You're doing great, ${username}!",
                         fontSize = 18.sp,
@@ -278,7 +309,10 @@ fun DashboardScreen(
                         color = TextPrimary,
                         textAlign = TextAlign.Center
                     )
+
                     Spacer(modifier = Modifier.width(12.dp))
+
+
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
@@ -289,6 +323,8 @@ fun DashboardScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+
 
             // Parent Linking Status Message
             if (linkedParentName == null) {
@@ -327,7 +363,11 @@ fun DashboardScreen(
                                 tint = PlayfulOrange,
                                 modifier = Modifier.size(32.dp)
                             )
+
                             Spacer(modifier = Modifier.height(12.dp))
+
+
+                            //prompt to link with parent
                             Text(
                                 text = "Link with Your Parent",
                                 fontSize = 18.sp,
@@ -336,6 +376,9 @@ fun DashboardScreen(
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(4.dp))
+
+
+                            //prompt to tap to connect account
                             Text(
                                 text = "Tap here to connect your account!",
                                 fontSize = 14.sp,
@@ -403,6 +446,10 @@ fun DashboardScreen(
     }
 }
 
+
+/**
+ * Profile header composable displaying welcome message and avatar.
+ */
 @Composable
 fun ProfileHeader(username: String) {
     Card(
@@ -460,6 +507,9 @@ fun ProfileHeader(username: String) {
     }
 }
 
+/**
+ * Composable for individual level selection cards with animations.
+ */
 @Composable
 fun LevelCard(
     level: Int,

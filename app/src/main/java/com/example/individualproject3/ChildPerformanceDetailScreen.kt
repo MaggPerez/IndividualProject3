@@ -38,6 +38,10 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 
+
+/**
+ * Composable screen to display a child's performance details
+ */
 @Composable
 fun ChildPerformanceDetailScreen(
     navController: NavController,
@@ -57,6 +61,8 @@ fun ChildPerformanceDetailScreen(
         )
     )
 ) {
+
+    // State to hold game sessions
     var gameSessions by remember { mutableStateOf<List<GameSession>>(emptyList()) }
     val context = LocalContext.current
     val gameRepository = remember {
@@ -71,6 +77,7 @@ fun ChildPerformanceDetailScreen(
         gameSessions = gameRepository.getSessionsForKid(childId)
     }
 
+    // Main Content
     PuzzleBotAnimatedBackground(modifier = modifier) {
         FloatingStars()
 
@@ -102,6 +109,7 @@ fun ChildPerformanceDetailScreen(
                     )
                 }
 
+                //child's name title
                 Text(
                     text = "$childUsername's Performance",
                     fontSize = 20.sp,
@@ -151,6 +159,8 @@ fun ChildPerformanceDetailScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
+
+                    // Child's Name and Total Sessions
                     Column {
                         Text(
                             text = childUsername,
@@ -182,6 +192,8 @@ fun ChildPerformanceDetailScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
+
+                    // Statistics Title
                     Text(
                         text = "Statistics",
                         fontSize = 20.sp,
@@ -190,6 +202,8 @@ fun ChildPerformanceDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+
+                    // Statistics Items
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -232,6 +246,8 @@ fun ChildPerformanceDetailScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
+
+                    // Chart Title
                     Text(
                         text = "Score Progress Over Time",
                         fontSize = 18.sp,
@@ -240,6 +256,7 @@ fun ChildPerformanceDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Chart or No Data Message
                     if (gameSessions.isNotEmpty()) {
                         ScoreProgressChart(gameSessions)
                     } else {
@@ -255,6 +272,8 @@ fun ChildPerformanceDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+
+
             // Success Rate by Level Chart
             Card(
                 modifier = Modifier
@@ -268,6 +287,7 @@ fun ChildPerformanceDetailScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
+                    // Chart Title
                     Text(
                         text = "Success Rate by Level",
                         fontSize = 18.sp,
@@ -276,6 +296,7 @@ fun ChildPerformanceDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Chart or No Data Message
                     if (gameSessions.isNotEmpty()) {
                         SuccessRateByLevelChart(gameSessions)
                     } else {
@@ -292,6 +313,11 @@ fun ChildPerformanceDetailScreen(
     }
 }
 
+
+
+/**
+ * Composable to display a single statistic item
+ */
 @Composable
 fun StatisticItem(
     label: String,
@@ -315,6 +341,10 @@ fun StatisticItem(
     }
 }
 
+
+/**
+ * Chart showing score progress over time
+ */
 @Composable
 fun ScoreProgressChart(gameSessions: List<GameSession>) {
     // Sort sessions by timestamp
@@ -388,6 +418,10 @@ fun ScoreProgressChart(gameSessions: List<GameSession>) {
     )
 }
 
+
+/**
+ * Chart showing success rate by level
+ */
 @Composable
 fun SuccessRateByLevelChart(gameSessions: List<GameSession>) {
     // Group sessions by level and calculate success rate

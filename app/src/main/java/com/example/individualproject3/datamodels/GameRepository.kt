@@ -11,6 +11,9 @@ class GameRepository(
     //initializing log manager
     private val logManager = LogManager(context)
 
+    /**
+     * Fetches all game sessions for a specific kid from the database.
+     */
     suspend fun getSessionsForKid(kidId: Int): List<GameSession> {
         return gameSessionDao.getSessionsForKid(kidId)
     }

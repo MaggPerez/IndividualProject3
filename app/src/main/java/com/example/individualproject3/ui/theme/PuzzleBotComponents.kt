@@ -59,6 +59,9 @@ fun PuzzleBotAnimatedBackground(
     }
 }
 
+
+
+
 /**
  * Floating decorative stars, adds playful elements to any screen
  */
@@ -120,6 +123,8 @@ fun BoxScope.FloatingStars() {
     )
 }
 
+
+
 /**
  * Primary button, bright green for main actions
  */
@@ -172,6 +177,9 @@ fun PuzzleBotPrimaryButton(
         }
     }
 }
+
+
+
 
 /**
  * Secondary button - bright orange for secondary actions
@@ -257,6 +265,10 @@ fun PuzzleBotCard(
     }
 }
 
+
+
+
+
 /**
  * Circular mascot container with bounce animation
  */
@@ -303,6 +315,9 @@ fun PuzzleBotMascotContainer(
     }
 }
 
+
+
+
 /**
  * Page title with fun styling
  */
@@ -323,6 +338,8 @@ fun PuzzleBotTitle(
     )
 }
 
+
+
 /**
  * Subtitle with emojis
  */
@@ -341,6 +358,8 @@ fun PuzzleBotSubtitle(
         textAlign = TextAlign.Center
     )
 }
+
+
 
 /**
  * Kid-friendly text button (for "Already have account?" etc)

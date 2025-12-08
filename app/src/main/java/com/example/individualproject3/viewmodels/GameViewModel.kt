@@ -33,6 +33,8 @@ enum class CellType {
  */
 data class Position(val row: Int, val col: Int)
 
+
+
 /**
  * Robot state
  */
@@ -41,8 +43,23 @@ data class RobotState(
     val isActive: Boolean = false
 )
 
+
+
+
+
 /**
  * Puzzle configuration
+ * @param puzzleId Unique identifier for the puzzle
+ * @param level Difficulty level of the puzzle
+ * @param gameNumber Specific game number within the level
+ * @param gridSize Size of the game board (gridSize x gridSize)
+ * @param board 2D list representing the game board with cell types
+ * @param startPosition Starting position of the robot
+ * @param goalPosition Goal position to reach
+ * @param maxCommands Maximum number of commands allowed
+ * @param keys List of collectible key positions (for Hard difficulty)
+ * @param traps List of trap positions that activate when a key is collected
+ * @param optimalMoves Actual optimal number of moves (accounts for walls), defaults to Manhattan distance
  */
 data class PuzzleConfig(
     val puzzleId: Int,
@@ -53,13 +70,17 @@ data class PuzzleConfig(
     val startPosition: Position,
     val goalPosition: Position,
     val maxCommands: Int = 10,
-    val keys: List<Position> = emptyList(), // Collectible key positions for Hard difficulty
-    val traps: List<Position> = emptyList(), // Trap positions that activate when a key is collected
-    val optimalMoves: Int? = null // Actual optimal number of moves (accounts for walls), defaults to Manhattan distance if null
+    val keys: List<Position> = emptyList(),
+    val traps: List<Position> = emptyList(),
+    val optimalMoves: Int? = null
 )
 
 /**
  * Game execution state
+ * Idle - waiting to run
+ * Running - executing commands
+ * Success - reached goal
+ * Failed - hit wall or trap
  */
 sealed class GameState {
     data object Idle : GameState()
@@ -78,7 +99,9 @@ class GameViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    //keys for SavedStateHandle
+    /**
+     * Companion object for saved state keys
+     */
     companion object {
         private const val KEY_PUZZLE_ID = "puzzle_id"
         private const val KEY_PUZZLE_LEVEL = "puzzle_level"
@@ -94,11 +117,17 @@ class GameViewModel(
         private const val KEY_TRAPS_ACTIVATED = "traps_activated"
     }
 
+
+    // Media player for background music
     private var mediaPlayer: MediaPlayer? = null
+
+
 
     // Current puzzle configuration
     var currentPuzzle by mutableStateOf<PuzzleConfig?>(null)
         private set
+
+
 
     // Command queue (list of directions)
     var commandQueue by mutableStateOf<List<Direction>>(
@@ -107,6 +136,8 @@ class GameViewModel(
         } ?: emptyList()
     )
         private set
+
+
 
     // Robot state
     var robotState by mutableStateOf<RobotState?>(
@@ -117,6 +148,8 @@ class GameViewModel(
         }
     )
         private set
+
+
 
     // Game execution state
     var gameState by mutableStateOf<GameState>(
@@ -129,25 +162,37 @@ class GameViewModel(
     )
         private set
 
+
+
     // Attempts counter
     var attempts by mutableStateOf(savedStateHandle.get<Int>(KEY_ATTEMPTS) ?: 0)
         private set
+
+
 
     // Score
     var score by mutableStateOf(savedStateHandle.get<Int>(KEY_SCORE) ?: 0)
         private set
 
+
+
     // Keys collected (for Hard difficulty)
     var keysCollected by mutableStateOf(savedStateHandle.get<Int>(KEY_KEYS_COLLECTED) ?: 0)
         private set
+
+
 
     // Remaining key positions (for Hard difficulty)
     var remainingKeys by mutableStateOf<List<Position>>(emptyList())
         private set
 
+
+
     // Trap activation state (false = faint/inactive, true = solid/active)
     var trapsActivated by mutableStateOf(savedStateHandle.get<Boolean>(KEY_TRAPS_ACTIVATED) ?: false)
         private set
+
+
 
     /**
      * Initialize and play background music
@@ -171,15 +216,23 @@ class GameViewModel(
         mediaPlayer = null
     }
 
+
+    /**
+     * Clean up resources on ViewModel clearance
+     */
     override fun onCleared() {
         super.onCleared()
         stopMusic()
     }
 
+
+
     /**
      * Get saved puzzle ID for restoration
      */
     fun getSavedPuzzleId(): Int? = savedStateHandle.get<Int>(KEY_PUZZLE_ID)
+
+
 
     /**
      * Load a puzzle
@@ -194,6 +247,8 @@ class GameViewModel(
         val isNewPuzzle = currentPuzzle?.puzzleId != puzzle.puzzleId
         currentPuzzle = puzzle
 
+
+        // Reset state if it's a new puzzle
         if (isNewPuzzle) {
             // Reset everything for a new puzzle
             robotState = RobotState(position = puzzle.startPosition)
@@ -218,7 +273,7 @@ class GameViewModel(
             savedStateHandle[KEY_KEYS_COLLECTED] = 0
             savedStateHandle[KEY_TRAPS_ACTIVATED] = false
         } else {
-            // Just update puzzle reference, keep existing state
+            //update puzzle reference, keep existing state
             savedStateHandle[KEY_PUZZLE_ID] = puzzle.puzzleId
             savedStateHandle[KEY_PUZZLE_LEVEL] = puzzle.level
             savedStateHandle[KEY_PUZZLE_GAME_NUMBER] = puzzle.gameNumber
@@ -235,6 +290,8 @@ class GameViewModel(
         }
     }
 
+
+
     /**
      * Remove last command from the queue
      */
@@ -245,6 +302,8 @@ class GameViewModel(
         }
     }
 
+
+
     /**
      * Clear all commands
      */
@@ -252,6 +311,8 @@ class GameViewModel(
         commandQueue = emptyList()
         savedStateHandle[KEY_COMMAND_QUEUE] = emptyArray<String>()
     }
+
+
 
     /**
      * Execute the command queue (run the robot)
@@ -280,16 +341,23 @@ class GameViewModel(
 
             // Execute each command with animation delay
             for (command in commandQueue) {
-                delay(500) // Animation delay
 
+                // Animation delay
+                delay(500)
+
+
+                // Get new position based on command
                 val newPosition = getNextPosition(currentPosition, command)
 
                 // Check if the new position is valid
                 if (isValidPosition(newPosition, puzzle)) {
+
+                    // Update position
                     currentPosition = newPosition
                     robotState = RobotState(position = currentPosition, isActive = true)
                     savedStateHandle[KEY_ROBOT_ROW] = currentPosition.row
                     savedStateHandle[KEY_ROBOT_COL] = currentPosition.col
+
 
                     // Check if robot stepped on a key
                     if (currentPosition in remainingKeys) {
@@ -297,7 +365,7 @@ class GameViewModel(
                         keysCollected++
                         savedStateHandle[KEY_KEYS_COLLECTED] = keysCollected
 
-                        // Activate traps when first key is collected
+                        // Activate traps when first key is collected. Only shown on hard and very hard levels
                         if (keysCollected == 1 && puzzle.traps.isNotEmpty() && !trapsActivated) {
                             trapsActivated = true
                             savedStateHandle[KEY_TRAPS_ACTIVATED] = true
@@ -313,11 +381,15 @@ class GameViewModel(
                         return@launch
                     }
 
+
+
                     // Check if goal is reached
                     if (currentPosition == puzzle.goalPosition) {
                         // For Hard difficulty, check if all keys are collected
                         val allKeysCollected = puzzle.keys.isEmpty() || keysCollected == puzzle.keys.size
 
+
+                        // If all keys collected or not required, success
                         if (allKeysCollected) {
                             gameState = GameState.Success
 
@@ -350,6 +422,7 @@ class GameViewModel(
                 saveGameSession(puzzle, success = false)
             }
 
+            // Update robot state to inactive
             robotState = RobotState(position = currentPosition, isActive = false)
         }
     }
@@ -377,6 +450,8 @@ class GameViewModel(
         return puzzle.board[position.row][position.col] != CellType.WALL
     }
 
+
+
     /**
      * Calculate score based on efficiency
      */
@@ -393,6 +468,8 @@ class GameViewModel(
 
         score = baseScore.coerceAtLeast(10) // Minimum score of 10
     }
+
+
 
     /**
      * Save game session to database
@@ -412,6 +489,8 @@ class GameViewModel(
             gameRepository.insertSession(session, username)
         }
     }
+
+
 
     /**
      * Reset the game
@@ -433,6 +512,8 @@ class GameViewModel(
             savedStateHandle[KEY_TRAPS_ACTIVATED] = false
         }
     }
+
+
 
     /**
      * Reset for next puzzle

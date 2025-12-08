@@ -18,6 +18,7 @@ abstract class UserDatabase : RoomDatabase() {
         @Volatile
         private var Instance: UserDatabase? = null
 
+        // gets the database instance
         fun getDatabase(context: Context): UserDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, UserDatabase::class.java, "user_database")
