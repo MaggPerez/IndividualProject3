@@ -40,7 +40,7 @@ import com.example.individualproject3.datamodels.UserRepository
 import com.example.individualproject3.ui.theme.*
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModel
 import com.example.individualproject3.viewmodels.LoginRegistrationViewModelFactory
-//todo: fix link with your parents message styling where it shows a weird gray rectangle around the text
+
 @Composable
 fun DashboardScreen(
     navController: NavController,
@@ -291,55 +291,109 @@ fun DashboardScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Parent Linking Status Message
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .shadow(4.dp, RoundedCornerShape(16.dp))
-                    .clickable(
-                        enabled = linkedParentName == null,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        if (linkedParentName == null) {
-                            viewModel.showLinkParentModal()
-                        }
-                    },
-                colors = CardDefaults.cardColors(
-                    containerColor = if (linkedParentName == null) PlayfulOrange.copy(alpha = 0.1f) else BrightGreen.copy(alpha = 0.1f)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Row(
+            if (linkedParentName == null) {
+                // Clickable card for unlinked state
+                Surface(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                        .fillMaxWidth(0.9f)
+                        .shadow(6.dp, RoundedCornerShape(20.dp))
+                        .clickable(
+                            onClick = { viewModel.showLinkParentModal() },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ),
+                    shape = RoundedCornerShape(20.dp),
+                    color = SurfaceWhite
                 ) {
-                    Icon(
-                        imageVector = if (linkedParentName == null) Icons.Default.Link else Icons.Default.Person,
-                        contentDescription = null,
-                        tint = if (linkedParentName == null) PlayfulOrange else BrightGreen,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    if (linkedParentName == null) {
-                        Text(
-                            text = "You're not linked to a parent. Get linked now!",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PlayfulOrange,
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        Text(
-                            text = "You are linked with your parent: $linkedParentName",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = BrightGreen,
-                            textAlign = TextAlign.Center
-                        )
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        PlayfulOrange.copy(alpha = 0.15f),
+                                        BrightOrange.copy(alpha = 0.1f)
+                                    )
+                                )
+                            )
+                            .padding(20.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Link,
+                                contentDescription = null,
+                                tint = PlayfulOrange,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "Link with Your Parent",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = PlayfulOrange,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Tap here to connect your account!",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = TextSecondary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            } else {
+                // Non-clickable card for linked state
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .shadow(6.dp, RoundedCornerShape(20.dp)),
+                    colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        BrightGreen.copy(alpha = 0.15f),
+                                        BrightGreen.copy(alpha = 0.08f)
+                                    )
+                                )
+                            )
+                            .padding(20.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = BrightGreen,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "✓ Linked with Parent",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = BrightGreen,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = linkedParentName ?: "",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TextPrimary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
