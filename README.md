@@ -23,7 +23,6 @@ PuzzleBot is an educational game where players guide a robot through grid based 
 - **Architecture**: MVVM with ViewModels and Repositories
 - **Database**: Room
 - **Navigation**: Jetpack Navigation Compose
-- **Min SDK**: 34
 
 
 ## How The Game is Played
